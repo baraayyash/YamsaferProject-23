@@ -4,20 +4,42 @@ var _ = require('lodash');
 var Message = require('./message.model');
 var Mixpanel = require('../services/mixpanel');
 var express = require('express');
-var fadiVar = require('../services/fadi');
+
 
 // Get list of messages
 exports.index = function(req, res) {
-    
 
-    var udid = req.param('udid');    
-    
-    fadiVar.setQuery("properties[\"$first_name\"] == \"" + udid + "\"");
-    
-    exports.getQuery = function(param1) {        
-        res.json(param1);
-        res.end();
-    };
+//console.log("got shit="+req.param('udid'));
+
+     console.log(req.body);
+// res.header('Access-Control-Allow-Origin', '*');
+// res.json({ name : "hello"})
+//  var cors = require('cors');
+//  var app = express();
+//  //app.use(cors());
+//  app.use(function(req, res, next) {
+//   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+//   res.header("Access-Control-Allow-Origin", "*");
+//   next();
+// });
+console.log(req.body);
+var udid = req.param('udid'); 
+console.log(udid+" -->this was udid");
+var fadiVar=require('../services/fadi');
+
+fadiVar.setQuery("properties[\"$first_name\"] == \""+udid+"\"", baratest);
+
+function baratest(data){
+
+console.log(data);
+
+}
+
+exports.getQuery = function(param1) {
+ console.log(param1+" -->a5eran zebtat");
+ res.json(param1);
+ res.end();
+ };
 };
 
 

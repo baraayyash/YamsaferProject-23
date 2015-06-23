@@ -4,13 +4,13 @@
 
 "use strict";
 
-var needle = require('needle'),
-    crypto = require('crypto'),
-    fs = require('fs'),
-    exit = require('exit'),
+var needle      = require('needle'),
+    crypto      = require('crypto'),
+    fs          = require('fs'),
+    exit        = require('exit'),
 
     // mixpanel
-    base_url = "http://mixpanel.com/api/2.0/";
+    base_url    = "http://mixpanel.com/api/2.0/";
 require('sugar-date');
 
 // add environment variables from .env if present
@@ -76,7 +76,7 @@ var yargs = require('yargs')
     .epilogue('Note that Mixpanel API key/secret may also be set using environment variables. For more information, see https://github.com/stpe/mixpanel-engage-query');
 
 //if (!process.env.MIXPANEL_API_KEY) {
-//   yargs.demand(['k']);
+ //   yargs.demand(['k']);
 //}
 
 //if (!process.env.MIXPANEL_API_SECRET) {
@@ -85,8 +85,8 @@ var yargs = require('yargs')
 
 var argv = yargs.argv;
 //console.log(argv);
-var MIXPANEL_API_KEY = "03e3e0fe6667d9380e7840b089fec718"; //process.env.MIXPANEL_API_KEY || argv.key;
-var MIXPANEL_API_SECRET = "b1fa91438e3dd16b2028c5e087ee909e"; //process.env.MIXPANEL_API_SECRET || argv.secret;
+var MIXPANEL_API_KEY = "03e3e0fe6667d9380e7840b089fec718";//process.env.MIXPANEL_API_KEY || argv.key;
+var MIXPANEL_API_SECRET = "b1fa91438e3dd16b2028c5e087ee909e";//process.env.MIXPANEL_API_SECRET || argv.secret;
 //var MIXPANEL_API_KEY ="03e3e0fe6667d9380e7840b089fec718";
 //var MIXPANEL_API_SECRET ="b1fa91438e3dd16b2028c5e087ee909e";
 // get mp properties to output
@@ -104,7 +104,7 @@ if (typeof argv.query === "string") {
         try {
             var dateISOstring = Date.create(date).format('{yyyy}-{MM}-{dd}T{hh}:{mm}:{ss}');
             argv.query = argv.query.replace(tag, dateISOstring);
-        } catch (e) {
+        } catch(e) {
             console.log("Error parsing date '" + date + "': " + e.message);
             exit(1);
         }
@@ -112,19 +112,21 @@ if (typeof argv.query === "string") {
 }
 
 // do the stuff!
-exports.setQuery = function(querySent) {
-    // var str="\""+querySent+"\"";
-    console.log(querySent + " -->out from str ****");
-    argv.query = querySent;
-    queryEngageApi({
-        where: argv.query || ""
-    });
+exports.setQuery=function(querySent,callback){
+ // var str="\""+querySent+"\"";
+   console.log(querySent+" -->out from str ****");
+argv.query = querySent;
+queryEngageApi({
+    where: argv.query || ""
+});
+
+callback("hello this is callback");
 }
 
 //argv.query = "properties[\"$first_name\"] == \"Naem\"";
-/*queryEngageApi({
-    where: argv.query || ""
-});*/
+// queryEngageApi({
+//     where: argv.query || ""
+// });
 //console.log(argv.query);
 
 
@@ -133,7 +135,7 @@ exports.setQuery = function(querySent) {
 
 // ------------------------------------------
 
-exports.queryEngageApi = function(params,callback) {
+function queryEngageApi(params) {
     var page_size, total;
 
     var doQuery = function(params) {
@@ -182,9 +184,9 @@ exports.queryEngageApi = function(params,callback) {
 
             total -= data.results.length;
             var isLastQuery = total < 1;
-            // fadi add this 
-            //return both data , isLastQuery
-            //end
+// fadi add this 
+//return both data , isLastQuery
+//end
             processResults(data, isLastQuery);
 
             // if not done, keep querying for additional pages
@@ -199,8 +201,8 @@ exports.queryEngageApi = function(params,callback) {
                     console.log(']');
                 }
 
-                //  exit(0);
-                callback(data);
+              //  exit(0);
+             // console.log("the last thing to be ex");
             }
         });
     }
@@ -208,71 +210,70 @@ exports.queryEngageApi = function(params,callback) {
     doQuery(params);
 }
 
-function processResults(data, isLastQuery) {
-        var i, csv, entry, len = data.results.length,
-            output;
+    function processResults (data, isLastQuery) {
+    var i, csv, entry, len = data.results.length, output;
 
-        for (i = 0; i < len; i++) {
-            if (required.length > 0) {
-                // skip if not required properties present
-                if (!required.every(function(r) {
-                        return typeof data.results[i].$properties[r] !== 'undefined';
-                    })) {
-                    continue;
-                }
-            }
-
-            // include $distinct_id in property list for convenience
-            if (data.results[i].$distinct_id) {
-                data.results[i].$properties.$distinct_id = data.results[i].$distinct_id;
-            }
-
-            entry = {};
-            if (properties.length === 0) {
-                // output all
-                entry = data.results[i].$properties;
-            } else {
-                // only include given properties
-                properties.forEach(function(p) {
-                    entry[p] = data.results[i].$properties[p] || '';
-                });
-            }
-
-            // skip if object is empty
-            if (Object.keys(entry).length === 0) {
+    for (i = 0; i < len; i++) {
+        if (required.length > 0) {
+            // skip if not required properties present
+            if (!required.every(function(r) {
+                return typeof data.results[i].$properties[r] !== 'undefined';
+            })) {
                 continue;
             }
-
-            if (argv.format == "csv") {
-                // csv
-                csv = [];
-                Object.keys(entry).forEach(function(k) {
-                    csv.push(entry[k]);
-                });
-                output = csv.join(";");
-            } else {
-                // json
-                output = JSON.stringify(entry);
-
-                // if not last result...
-                if (!argv.noarray && (i < len - 1 || !isLastQuery)) {
-                    // ...append comma
-                    output += ",";
-                }
-            }
-
-            console.log(output + " -->from here");
-            var sendTo = require('../message/message.controller');
-            sendTo.getQuery(output);
-            //fadi add this 
-            //function
-            //end
         }
+
+        // include $distinct_id in property list for convenience
+        if (data.results[i].$distinct_id) {
+            data.results[i].$properties.$distinct_id = data.results[i].$distinct_id;
+        }
+
+        entry = {};
+        if (properties.length === 0) {
+            // output all
+            entry = data.results[i].$properties;
+        } else {
+            // only include given properties
+            properties.forEach(function(p) {
+                entry[p] = data.results[i].$properties[p] || '';
+            });
+        }
+
+        // skip if object is empty
+        if (Object.keys(entry).length === 0) {
+            continue;
+        }
+
+        if (argv.format == "csv") {
+            // csv
+            csv = [];
+            Object.keys(entry).forEach(function(k) {
+                csv.push(entry[k]);
+            });
+            output = csv.join(";");
+        } else {
+            // json
+            output = JSON.stringify(entry);
+
+            // if not last result...
+            if (!argv.noarray && (i < len - 1 || !isLastQuery)) {
+                // ...append comma
+                output += ",";
+            }
+        }
+
+        console.log(output+" -->from here");
+var sendTo=require('../message/message.controller');
+sendTo.getQuery(output);
+   //fadi add this 
+    //function
+   //end
     }
-    /*exports.getOutFadi=function (var1){
-    console.log(fadiAwesome+"mnbvcz");
-    return "raul";
-    }*/
+}
+/*exports.getOutFadi=function (var1){
+console.log(fadiAwesome+"mnbvcz");
+return "raul";
+}*/
 
 
 function getUrl(endpoint, args) {
