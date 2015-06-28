@@ -180,7 +180,7 @@ function queryEngageApi(params) {
 
                 // beginning of json array
                 if (argv.format == 'json' && !argv.noarray) {
-                    console.log('[');
+                   // console.log('[');
                 }
             }
 
@@ -198,7 +198,7 @@ function queryEngageApi(params) {
             } else {
                 // end of json array
                 if (argv.format == 'json' && !argv.noarray) {
-                    console.log(']');
+                   // console.log(']');
                 }
 
          //       exit(0);

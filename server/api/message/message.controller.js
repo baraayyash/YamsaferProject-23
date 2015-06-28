@@ -2,46 +2,22 @@
 
 var _ = require('lodash');
 var Message = require('./message.model');
-var Mixpanel = require('../services/mixpanel');
+//var Mixpan-el = require('../services/mixpanel');
 var express = require('express');
-
+var engage = require('../services/engage');
 
 // Get list of messages
 exports.index = function(req, res) {
 
-//console.log("got shit="+req.param('udid'));
-
-     console.log(req.body);
-// res.header('Access-Control-Allow-Origin', '*');
-// res.json({ name : "hello"})
-//  var cors = require('cors');
-//  var app = express();
-//  //app.use(cors());
-//  app.use(function(req, res, next) {
-//   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-//   res.header("Access-Control-Allow-Origin", "*");
-//   next();
-// });
-console.log(req.body);
-var udid = req.param('udid'); 
-console.log(udid+" -->this was udid");
-var fadiVar=require('../services/fadi');
-
-fadiVar.setQuery("properties[\"$first_name\"] == \""+udid+"\"", baratest);
-
-function baratest(data){
-
-console.log(data);
-
-}
-
-exports.getQuery = function(param1) {
- console.log(param1+" -->a5eran zebtat");
- res.json(param1);
- res.end();
- };
+    
+    var udid = req.param('udid');
+    engage.queryEngageApi({
+        where: "properties[\"$first_name\"] == \"" + udid + "\"" || ""
+    }, function(queryDone) {  
+        res.json(queryDone);
+        res.end();
+    });
 };
-
 
 // Get a single message
 exports.show = function(req, res) {

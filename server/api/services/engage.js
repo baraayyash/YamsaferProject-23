@@ -1,17 +1,16 @@
-//#!/usr/bin/env node
+#!/usr/bin/env node
 
 /*jshint node: true */
 
 "use strict";
 
-var needle  = require('needle');
-   var crypto      = require('crypto');
-   var fs          = require('fs');
-   var exit        = require('exit');
+var needle = require('needle'),
+    crypto = require('crypto'),
+    fs = require('fs'),
+    exit = require('exit'),
 
     // mixpanel
-    var base_url    = "http://mixpanel.com/api/2.0/";
-
+    base_url = "http://mixpanel.com/api/2.0/";
 require('sugar-date');
 
 // add environment variables from .env if present
@@ -76,23 +75,13 @@ var yargs = require('yargs')
     })
     .epilogue('Note that Mixpanel API key/secret may also be set using environment variables. For more information, see https://github.com/stpe/mixpanel-engage-query');
 
-//if (!process.env.MIXPANEL_API_KEY) {
- //   yargs.demand(['k']);
-//}
-
-//if (!process.env.MIXPANEL_API_SECRET) {
-//    yargs.demand(['s']);
-//}
 
 var argv = yargs.argv;
 //console.log(argv);
-var MIXPANEL_API_KEY = "03e3e0fe6667d9380e7840b089fec718";//process.env.MIXPANEL_API_KEY || argv.key;
-var MIXPANEL_API_SECRET = "b1fa91438e3dd16b2028c5e087ee909e";//process.env.MIXPANEL_API_SECRET || argv.secret;
-//var MIXPANEL_API_KEY ="03e3e0fe6667d9380e7840b089fec718";
-//var MIXPANEL_API_SECRET ="b1fa91438e3dd16b2028c5e087ee909e";
-// get mp properties to output
-var properties = typeof argv.properties === "string" ? argv.properties.split(" ") : [];
+var MIXPANEL_API_KEY = "03e3e0fe6667d9380e7840b089fec718";
+var MIXPANEL_API_SECRET = "b1fa91438e3dd16b2028c5e087ee909e";
 
+var properties = typeof argv.properties === "string" ? argv.properties.split(" ") : [];
 // get required mp properties
 var required = typeof argv.required === "string" ? argv.required.split(" ") : [];
 
@@ -106,30 +95,15 @@ if (typeof argv.query === "string") {
         try {
             var dateISOstring = Date.create(date).format('{yyyy}-{MM}-{dd}T{hh}:{mm}:{ss}');
             argv.query = argv.query.replace(tag, dateISOstring);
-        } catch(e) {
+        } catch (e) {
             console.log("Error parsing date '" + date + "': " + e.message);
             exit(1);
         }
     }
 }
 
-// do the stuff!
-
-argv.query = "properties[\"$first_name\"] == \"Naem\"";
-queryEngageApi({
-    where: argv.query || ""
-});
-//console.log(argv.query);
-
-
-
-//req.end();
-
 // ------------------------------------------
-exports.getOutput = function(callback) {
-
-}
-function queryEngageApi(params) {
+exports.queryEngageApi = function(params, callback) {
     var page_size, total;
 
     var doQuery = function(params) {
@@ -172,44 +146,44 @@ function queryEngageApi(params) {
 
                 // beginning of json array
                 if (argv.format == 'json' && !argv.noarray) {
-                    console.log('[');
+                    //console.log('[');
                 }
             }
 
             total -= data.results.length;
             var isLastQuery = total < 1;
-
-            processResults(data, isLastQuery);
-
-            // if not done, keep querying for additional pages
+            processResults(data, isLastQuery, function(data) {
+                callback(data);
+            });
+            //  // if not done, keep querying for additional pages
             if (!isLastQuery) {
                 // get next page
                 params.page = data.page + 1;
 
-                doQuery(params);
+                doQuery(params, res);
             } else {
                 // end of json array
                 if (argv.format == 'json' && !argv.noarray) {
-                    console.log(']');
+                    //console.log(']');
                 }
-
-         //       exit(0);
             }
         });
-    }
 
+    }
     doQuery(params);
+
 }
 
-function processResults(data, isLastQuery) {
-    var i, csv, entry, len = data.results.length, output;
+function processResults(data, isLastQuery, fn1) {
+    var i, csv, entry, len = data.results.length,
+        output;
 
     for (i = 0; i < len; i++) {
         if (required.length > 0) {
             // skip if not required properties present
             if (!required.every(function(r) {
-                return typeof data.results[i].$properties[r] !== 'undefined';
-            })) {
+                    return typeof data.results[i].$properties[r] !== 'undefined';
+                })) {
                 continue;
             }
         }
@@ -252,10 +226,7 @@ function processResults(data, isLastQuery) {
                 output += ",";
             }
         }
-        console.log(output+"before");
-         return output;
-        
-
+        fn1(output);
     }
 }
 
