@@ -96,7 +96,7 @@ exports.blocked = function(req, res) {
       else{
 
         return res.json("false");
-        // return console.log("not blocked");
+        // return console.log("not  blocked");
        
       }
      }
