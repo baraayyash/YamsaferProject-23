@@ -6,7 +6,7 @@ var Mixpanel = require('../services/mixpanel');
 var express = require('express');
 var engage = require('../services/engage');
 
-// Get list of customers
+// ///Get list of customers
 exports.index = function(req, res) {
   Customer.find(function (err, customers) {
     if(err) { return handleError(res, err); }
