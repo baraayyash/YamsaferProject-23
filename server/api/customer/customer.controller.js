@@ -143,7 +143,6 @@ function handleError(res, err) {
 
     //console.log(data);
     var req ={
-      
    // name: data["$first_name"],
     name: "heloo new",
     email: data["$email"],
