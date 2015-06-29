@@ -8,10 +8,10 @@ var CustomerSchema = new Schema({
   name: String,
   email: String,
   phone: String,
-  amount: String,
+  country_code: String,
   info: String,
-  blocked: Boolean,
-  country_code: String
+  blocked: Boolean
+  
 });
 
 module.exports = mongoose.model('Customer', CustomerSchema);
