@@ -10,6 +10,7 @@ var CustomerSchema = new Schema({
   phone: String,
   country_code: String,
   info: String,
+  transactions: [{type: Schema.Types.ObjectId, ref: 'Transaction'}],
   blocked: Boolean
   
 });

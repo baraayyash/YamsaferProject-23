@@ -2,6 +2,7 @@
 
 var _ = require('lodash');
 var Customer = require('./customer.model');
+var Transaction = require('../transaction/transaction.model');
 var Mixpanel = require('../services/mixpanel');
 var express = require('express');
 var engage = require('../services/engage');
@@ -18,27 +19,28 @@ exports.index = function(req, res) {
 exports.show = function(req, res) {
   Customer.findById(req.params.id, function (err, customer) {
     if(err) { return handleError(res, err); }
-    if(!customer) { return res.send(404); }
-    return res.json(customer);
+    if(!customer) { return res.send(404); }    
+    Customer.populate(customer,{path:'transactions'},function(err,customer){
+      return res.json(customer);
+  });
+
   });
 };
 
-
 exports.showbyname = function(req, res) {
-  console.log(req.params.id);
-  Customer.findOne({name:req.params.id}, function (err, customer) {
+   Customer.find({name:req.params.id}, function (err, customer) {
     if(err) { return handleError(res, err); }
-    if(!customer) { return res.send(404); }
-    return res.json(customer);
+    if(!customer) { return res.send(404); }    
+    Customer.populate(customer,{path:'transactions'},function(err,customer){
+      return res.json(customer);
+  });
+
   });
 };
 
 
 // Creates a new customer in the DB.
 exports.create = function(req, res) {
-  // console.log(req.body);
-  // var req ={ country_code : 'ps', name: 'testhere' };
-  // console.log(req);
   Customer.create(req.body, function(err, customer) {
     if(err) { return handleError(res, err); }
     return res.json(201, customer);
@@ -72,37 +74,26 @@ exports.destroy = function(req, res) {
 };
 
 
-
-
 exports.blocked = function(req, res) {
-
-
-   
     Customer.findOne({_id:req.params.id}, function (err, customer) {
     if(err) { return handleError(res, err); }
-
-    if(!customer) {
-      Customer.create(req, function(err, customer) {
-    if(err) { return handleError(res, err); }
-      return console.log("added");
-    });
+    if(!customer) {  
+    getDataFromMixP(req);
+    return res.json("false");
      }
-
      if(customer) {
       if((customer.blocked)){
         return res.json("true");
         // return console.log("blocked");
       }
       else{
-
         return res.json("false");
         // return console.log("not blocked");
-       
       }
      }
   });
        
-    };
+  };
 
 
   exports.block = function(req, res) {
@@ -110,17 +101,14 @@ exports.blocked = function(req, res) {
      var blockinfo ={
     blocked: req.param('blocked'),
      };
-   
     Customer.findOne({_id:req.param('id')}, function (err, customer) {
     if(err) { return handleError(res, err); }
-
     if(!customer) {
       Customer.create(req, function(err, customer) {
     if(err) { return handleError(res, err); }
       return console.log("added");
     });
      }
-
      if(customer) {
        var updated = _.merge(customer, blockinfo);
     updated.save(function (err) {
@@ -131,20 +119,15 @@ exports.blocked = function(req, res) {
   });
        
     };
-
-
-
 function handleError(res, err) {
   return res.send(500, err);
 }
 
 
   var saveData = function(data) {
-
     //console.log(data);
     var req ={
-   // name: data["$first_name"],
-    name: "heloo new",
+    name: data["$first_name"]+data["$last_name"],
     email: data["$email"],
     phone: data["$phone"], 
     amount: data.$transactions[0].$amount,
@@ -154,25 +137,28 @@ function handleError(res, err) {
      };
     
     //console.log(req);
-
-  Customer.findOne({name:req.name}, function (err, customer) {
+        Customer.create(req, function(err, customer) {
     if(err) { return handleError(res, err); }
-
-    if(!customer) {
-      Customer.create(req, function(err, customer) {
-    if(err) { return handleError(res, err); }
-      return console.log("added");
+      //console.log("added");
+      for (var i in data.$transactions) {
+        var req ={
+          amount: data.$transactions[i].$amount,
+          time: data.$transactions[i].$time,
+          customer: customer._id
+                 };
+      Transaction.create(req, function(err, transaction) {
+      if(err) { return handleError(res, err); }
+     // return res.json(201, transaction);
+     customer.transactions.push(transaction);
+     customer.save();
+      });
+       }
+      return console.log("done");
     });
-     }
-
-     if(customer) {
-      return console.log("exist");
-     }
-  });
   };
+  
 
 exports.getDataFromMixP = function(req, res) {
-
   var udid = req.param('udid');
     engage.queryEngageApi({
         where: "properties[\"$first_name\"] == \"" + udid + "\"" || ""
@@ -183,7 +169,6 @@ exports.getDataFromMixP = function(req, res) {
          saveData(jsondata);
         res.end();
     });
-
 };
 
 
