@@ -3,12 +3,8 @@
 var _ = require('lodash');
 var Transaction = require('./transaction.model');
 var Customer = require('../customer/customer.model');
-// Get list of transactions
-  exports.index = function(req, res) {
-//    var t = new Transaction({
-//         amount: '010'
-//     });
-//    t.save();
+
+exports.index = function(req, res) {
   Transaction.find(function (err, transactions) {
     if(err) { return handleError(res, err); }
     return res.json(200, transactions);
@@ -20,11 +16,10 @@ exports.show = function(req, res) {
   Transaction.findById(req.params.id, function (err, transaction) {
     if(err) { return handleError(res, err); }
     if(!transaction) { return res.send(404); }
-   Transaction.populate(transaction,{path:'customer'},
+    Transaction.populate(transaction,{path:'customer'},
       function(err,transaction){
           return res.json(transaction);
-    })
-    
+      })
   });
 };
 
