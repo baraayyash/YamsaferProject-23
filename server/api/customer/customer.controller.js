@@ -144,11 +144,11 @@ function handleError(res, err) {
           time: data.$transactions[i].$time,
           customer: customer._id
                  };
-      Transaction.create(req, function(err, transaction) {
-      if(err) { return handleError(res, err); }
-     // return res.json(201, transaction);
-     customer.transactions.push(transaction);
-      });
+          Transaction.create(req, function(err, transaction) {
+          if(err) { return handleError(res, err); }
+         // return res.json(201, transaction);
+         customer.transactions.push(transaction);
+          });
        }
        customer.save();
       return console.log("done");
