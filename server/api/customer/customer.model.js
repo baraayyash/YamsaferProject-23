@@ -12,7 +12,6 @@ var CustomerSchema = new Schema({
   info: String,
   transactions: [{type: Schema.Types.ObjectId, ref: 'Transaction'}],
   blocked: Boolean
-  
 });
 
 module.exports = mongoose.model('Customer', CustomerSchema);

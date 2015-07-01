@@ -22,8 +22,7 @@ exports.show = function(req, res) {
     if(!customer) { return res.send(404); }    
     Customer.populate(customer,{path:'transactions'},function(err,customer){
       return res.json(customer);
-  });
-
+    });
   });
 };
 
@@ -33,9 +32,8 @@ exports.showbyname = function(req, res) {
     if(!customer) { return res.send(404); }    
     Customer.populate(customer,{path:'transactions'},function(err,customer){
       return res.json(customer);
-  });
-
-  });
+    });
+   });
 };
 
 
@@ -73,43 +71,44 @@ exports.destroy = function(req, res) {
   });
 };
 
-
+//this function to see if customer is blocked or not
 exports.blocked = function(req, res) {
-    Customer.findOne({_id:req.params.id}, function (err, customer) {
-    if(err) { return handleError(res, err); }
+    Customer.findById(req.params.id, function (err, customer) {
+    if(err) {
+    // getDataFromMixPB(req.params.id,res);
+      return res.json("false");
+    }
     if(!customer) {  
-    getDataFromMixP(req);
+      getDataFromMixPB(req.params.id,res);
     return res.json("false");
      }
-     if(customer) {
+    if(customer) {
       if((customer.blocked)){
         return res.json("true");
-        // return console.log("blocked");
       }
       else{
         return res.json("false");
-        // return console.log("not blocked");
       }
-     }
+    }
   });
        
   };
 
-
+//this function to block single customer
   exports.block = function(req, res) {
 
+
      var blockinfo ={
-    blocked: req.param('blocked'),
+    blocked: req.body.blocked,
      };
-    Customer.findOne({_id:req.param('id')}, function (err, customer) {
-    if(err) { return handleError(res, err); }
+     console.log(blockinfo);
+    Customer.findOne({_id:req.body.id}, function (err, customer) {
+    if(err) { console.log("err");return handleError(res, err); }
     if(!customer) {
-      Customer.create(req, function(err, customer) {
-    if(err) { return handleError(res, err); }
-      return console.log("added");
-    });
+     return "does not exist";
      }
      if(customer) {
+      //console.log("updated");
        var updated = _.merge(customer, blockinfo);
     updated.save(function (err) {
       if (err) { return handleError(res, err); }
@@ -123,11 +122,11 @@ function handleError(res, err) {
   return res.send(500, err);
 }
 
-
+// saving data that got returned from mixpanel
   var saveData = function(data) {
     //console.log(data);
     var req ={
-    name: data["$first_name"]+data["$last_name"],
+    name: data["$first_name"]+ " " +data["$last_name"],
     email: data["$email"],
     phone: data["$phone"], 
     amount: data.$transactions[0].$amount,
@@ -135,8 +134,7 @@ function handleError(res, err) {
     blocked: false,
     country_code : data["$country_code"]
      };
-    
-    //console.log(req);
+
         Customer.create(req, function(err, customer) {
     if(err) { return handleError(res, err); }
       //console.log("added");
@@ -150,15 +148,15 @@ function handleError(res, err) {
       if(err) { return handleError(res, err); }
      // return res.json(201, transaction);
      customer.transactions.push(transaction);
-     customer.save();
       });
        }
+       customer.save();
       return console.log("done");
     });
   };
   
-
-exports.getDataFromMixP = function(req, res) {
+// get data from mixpanel 
+exports.getDataFromMixP = function(req,res) {
   var udid = req.param('udid');
     engage.queryEngageApi({
         where: "properties[\"$first_name\"] == \"" + udid + "\"" || ""
@@ -168,7 +166,20 @@ exports.getDataFromMixP = function(req, res) {
         // results[i].$properties[r]
          saveData(jsondata);
         res.end();
+
     });
 };
 
+var getDataFromMixPB = function(req,res) {
+    console.log("hello");
+    engage.queryEngageApi({
+        where: "properties[\"$first_name\"] == \"" + "Naem" + "\"" || ""
+    }, function(queryDone) {  
+     //   res.json(queryDone);
+        var jsondata = JSON.parse(queryDone);
+        // results[i].$properties[r]
+         saveData(jsondata);
+    //    res.end();
 
+    });
+};
