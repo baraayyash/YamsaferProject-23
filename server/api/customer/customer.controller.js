@@ -148,9 +148,10 @@ function handleError(res, err) {
           if(err) { return handleError(res, err); }
          // return res.json(201, transaction);
          customer.transactions.push(transaction);
+          customer.save();
           });
        }
-       customer.save();
+      
       return console.log("done");
     });
   };
