@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('internsApp')
+angular.module('callLogsApp')
   .controller('NavbarCtrl', function ($scope, $location) {
     $scope.menu = [{
       'title': 'Home',

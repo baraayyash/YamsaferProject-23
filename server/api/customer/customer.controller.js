@@ -6,6 +6,7 @@ var Transaction = require('../transaction/transaction.model');
 var Mixpanel = require('../services/mixpanel');
 var express = require('express');
 var engage = require('../services/engage');
+var CallLog = require('../callLog/callLog.model');
 
 // ///Get list of customers
 exports.index = function(req, res) {
@@ -31,6 +32,9 @@ exports.showbyname = function(req, res) {
     if(err) { return handleError(res, err); }
     if(!customer) { return res.send(404); }    
     Customer.populate(customer,{path:'transactions'},function(err,customer){
+     // return res.json(customer);
+    });
+     Customer.populate(customer,{path:'callLogs'},function(err,customer){
       return res.json(customer);
     });
    });
@@ -66,6 +70,7 @@ exports.destroy = function(req, res) {
     if(!customer) { return res.send(404); }
     customer.remove(function(err) {
       if(err) { return handleError(res, err); }
+      console.log(customer);
       return res.send(204);
     });
   });
@@ -83,6 +88,17 @@ exports.blocked = function(req, res) {
     return res.json("false");
      }
     if(customer) {
+      
+      //each time customer exist  update  call logs with new current Time
+       var newCallLogReq = {customer: customer._id};
+      CallLog.create(newCallLogReq, function(err, callLog) {
+     if (err) { console.log("error creatng new log ");
+         return handleError(res, err);
+     }
+     customer.callLogs.push(callLog);
+     customer.save();
+     console.log("new call log added");
+       });
       if((customer.blocked)){
         return res.json("true");
       }
@@ -148,8 +164,16 @@ function handleError(res, err) {
           if(err) { return handleError(res, err); }
          // return res.json(201, transaction);
          customer.transactions.push(transaction);
+         customer.save();
           });
        }
+
+       var callLogReq={udid:"777",customer: customer._id};
+        CallLog.create(callLogReq, function(err, callLog) {
+          if(err) { return handleError(res, err); }
+         customer.callLogs.push(callLog);
+         customer.save();
+          });
        customer.save();
       return console.log("done");
     });

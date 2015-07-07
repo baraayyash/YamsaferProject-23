@@ -11,6 +11,7 @@ var CustomerSchema = new Schema({
   country_code: String,
   info: String,
   transactions: [{type: Schema.Types.ObjectId, ref: 'Transaction'}],
+  callLogs: [{type: Schema.Types.ObjectId, ref: 'CallLog'}],
   blocked: Boolean
 });
 
