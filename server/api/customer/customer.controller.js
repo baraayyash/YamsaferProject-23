@@ -7,6 +7,7 @@ var Mixpanel = require('../services/mixpanel');
 var express = require('express');
 var engage = require('../services/engage');
 var CallLog = require('../callLog/callLog.model');
+var ioOut = require('socket.io-client');
 
 // ///Get list of customers
 exports.index = function(req, res) {
@@ -88,16 +89,21 @@ exports.blocked = function(req, res) {
     return res.json("false");
      }
     if(customer) {
-      
+
       //each time customer exist  update  call logs with new current Time
        var newCallLogReq = {customer: customer._id};
       CallLog.create(newCallLogReq, function(err, callLog) {
      if (err) { console.log("error creatng new log ");
          return handleError(res, err);
      }
+
      customer.callLogs.push(callLog);
      customer.save();
      console.log("new call log added");
+     //add 
+    var socketOut = ioOut.connect('http://localhost:9000',{ 'force new connection': true });
+    socketOut.emit('trigerEvent');
+
        });
       if((customer.blocked)){
         return res.json("true");
@@ -183,7 +189,10 @@ function handleError(res, err) {
 exports.getDataFromMixP = function(req,res) {
   var udid = req.param('udid');
     engage.queryEngageApi({
-        where: "properties[\"$first_name\"] == \"" + udid + "\"" || ""
+        // where: "properties[\"$first_name\"] == \"" + "moh" + "\"" || ""
+        // where: "properties[\"UDID\"] == \"" + "55726" + "\"" || ""
+        where: "properties[\"UDID\"] == \"" + udid + "\"" || ""
+
     }, function(queryDone) {  
         res.json(queryDone);
         var jsondata = JSON.parse(queryDone);
@@ -197,7 +206,7 @@ exports.getDataFromMixP = function(req,res) {
 var getDataFromMixPB = function(req,res) {
     console.log("hello");
     engage.queryEngageApi({
-        where: "properties[\"$first_name\"] == \"" + "Naem" + "\"" || ""
+        where: "properties[\"$UDID\"] == \"" + "55726" + "\"" || ""
     }, function(queryDone) {  
      //   res.json(queryDone);
         var jsondata = JSON.parse(queryDone);
@@ -207,3 +216,4 @@ var getDataFromMixPB = function(req,res) {
 
     });
 };
+

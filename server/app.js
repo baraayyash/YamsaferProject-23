@@ -19,9 +19,9 @@ if(config.seedDB) { require('./config/seed'); }
 
 // Setup server
 var app = express();
-
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
+  res.header( "Access-Control-Allow-Methods", "POST,GET,PUT,DELETE,OPTIONS,PATCH" );
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   next();
 });
@@ -30,9 +30,29 @@ var server = require('http').createServer(app);
 require('./config/express')(app);
 require('./routes')(app);
 
+
 // Start server
 server.listen(config.port, config.ip, function () {
   console.log('Express server listening on %d, in %s mode', config.port, app.get('env'));
+});
+
+var io = require('socket.io')(server);
+io.on('connection', function(client) {
+	    
+	    console.log('a user connected: ' + client.id);
+        console.log("****************** client connected ************");
+
+		client.on('trigerEvent', function(){
+        console.log('trigger is on');
+        client.broadcast.emit('timeline');
+    
+   		 })
+
+    	client.on('disconnect', function(){
+        console.log( ' has disconnected from the chat.' + client.id);
+    
+    	});
+
 });
 
 // Expose app

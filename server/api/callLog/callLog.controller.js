@@ -117,6 +117,7 @@ var findOneCallLogByID = function(IdSent, callback) {
 };
 
 exports.timeline = function(req, res) {
+    
     //array of 10 last users to display on timeline
     var arrOfId = [];
     /*
