@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('callLogsApp')
+angular.module('internsApp')
   .controller('MainCtrl', function ($scope, $http) {
     $scope.awesomeThings = [];
 

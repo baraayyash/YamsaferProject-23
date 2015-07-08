@@ -22,24 +22,28 @@ exports.show = function(req, res) {
     if(err) { return handleError(res, err); }
     if(!customer) { return res.send(404); }    
     Customer.populate(customer,{path:'transactions'},function(err,customer){
+      Customer.populate(customer,{path:'callLogs'},function(err,customer){
       return res.json(customer);
+    });
     });
   });
 };
 
 exports.showbyname = function(req, res) {
-   Customer.find({name:new RegExp(req.params.id, "i")} , function (err, customer) {
+
+
+   Customer.find({ $or: [{name:new RegExp(req.params.id, "i")},
+    {UDID: new RegExp(req.params.id, "i")},
+    {phone: new RegExp(req.params.id, "i")}] } ,
+    function (err, customer) {
     if(err) { return handleError(res, err); }
     if(!customer) { return res.send(404); }    
     Customer.populate(customer,{path:'transactions'},function(err,customer){
-     // return res.json(customer);
-    });
-     Customer.populate(customer,{path:'callLogs'},function(err,customer){
       return res.json(customer);
     });
+     
    });
 };
-
 
 
 exports.phone = function(req, res) {
@@ -127,7 +131,6 @@ exports.blocked = function(req, res) {
 // Creates a new customer in the DB.
   exports.block = function(req, res) {
 
-
      var blockinfo ={
     blocked: req.body.blocked,
      };
@@ -157,9 +160,6 @@ function handleError(res, err) {
 
 // saving data that got returned from mixpanel
   var saveData = function(data) {
-    //console.log(data);
-     //"{\"$city\":\"Ramallah\",\"$country_code\":\"PS\",\"$email\":\"developers@yamsafer.me\",\"$first_name\":\"moh\",\"$ios_app_release\":\"1.1\",\"$ios_app_version\":\"69\",\"$ios_device_model\":\"iPhone3,1\",\"$ios_lib_version\":\"2.8.1\",\"$ios_version\":\"7.1.2\",\"$last_name\":\"taweel\",\"$name\":\"moh taweel\",\"$phone\":\"+972568600919\",\"$region\":\"West Bank\",\"$timezone\":\"Asia/Hebron\",\"Check-in Date\":\"2015-07-12T02:00:00\",\"Check-out Date\":\"2015-07-15T02:00:00\",\"Current Language\":\"en\",\"UDID\":\"55726\",\"User Type\":\"iOS\",\"Yozio MetaData\":\"yozio_device_id=3340B695-8E95-4F85-BE15-79C98EF08185&timestamp=1435667107939\",\"$last_seen\":\"2015-07-01T16:14:28\",\"$distinct_id\":\"3340B695-8E95-4F85-BE15-79C98EF08185\"}"
-   //"{\"$android_app_version\":\"1.0\",\"$android_app_version_code\":\"10182\",\"$android_brand\":\"htc\",\"$android_devices\":[\"APA91bFUbob1MXTB2q8Hde_COmmA2iKySIFq1R-pbwjvV6Ojt5R__WBQ05Juwl_3CEnG9tC9EOX4tVj6PMzFBsc3ubn2pRn5uM8Mrn2f6YPWNRJ3cLB-Mfqx-Mw5s3U5pZZgRSzVBc2lchA7E3MfnHKZB7nVWoJpbg\"],\"$android_lib_version\":\"4.5.3\",\"$android_manufacturer\":\"HTC\",\"$android_model\":\"HTC One_M8 dual sim\",\"$android_os\":\"Android\",\"$android_os_version\":\"5.0.2\",\"$city\":\"Ramallah\",\"$country_code\":\"PS\",\"$email\":\"azzam@yamsafer.me\",\"$first_name\":\"testbooking\",\"$ip\":\"188.225.179.138\",\"$last_checkin\":\"2015-06-23T00:00:00\",\"$last_checkout\":\"2015-06-24T00:00:00\",\"$last_name\":\"testbooking\",\"$name\":\"testbooking testbooking\",\"$phone\":\"+972598076842\",\"$region\":\"West Bank\",\"$time\":\"2015-06-21T11:06:03\",\"$timezone\":\"Asia/Hebron\",\"$transactions\":[{\"$amount\":273.05,\"$time\":\"2015-06-09T18:44:33\"},{\"$amount\":225.02,\"$time\":\"2015-06-16T15:51:00\"},{\"$amount\":198.14,\"$time\":\"2015-06-21T11:06:03\"}],\"Count of Confirmed Bookings\":3,\"Count of Online Checkouts\":3,\"Current Language\":\"en\",\"UDID\":\"23328\",\"User Type\":\"Android\",\"$last_seen\":\"2015-06-21T11:06:22\",\"$distinct_id\":\"f545feda-dbe1-4f28-bc0b-d08ac7ecbef2\"}"   
 
     if(data["User Type"]=="iOS")
     {   
@@ -255,8 +255,7 @@ function handleError(res, err) {
           });
        }
       
-
-       var callLogReq={udid:"777",customer: customer._id};
+       var callLogReq={customer: customer._id};
         CallLog.create(callLogReq, function(err, callLog) {
           if(err) { return handleError(res, err); }
          customer.callLogs.push(callLog);
@@ -270,16 +269,9 @@ function handleError(res, err) {
   
 
 
-// get data from mixpanel 
-       // where: "properties[\"$first_name\"] == \"" + "moh" + "\"" || ""
-       // where: "properties[\"UDID\"] == \"" + "55726" + "\"" || ""
-       //where: "properties[\"UDID\"] == \"" + "23328" + "\"" || ""
 exports.getDataFromMixP = function(req,res) {
-  
-  // console.log("hello");
-
+ 
   var udid = req.param('udid');
-
        engage.queryEngageApi({
         where: "properties[\"UDID\"] == \"" + udid  + "\"" || ""
     }, function(queryDone) {  
@@ -293,7 +285,6 @@ exports.getDataFromMixP = function(req,res) {
 };
 
 var getDataFromMixPB = function(req,res) {
-    //console.log("hello");
     var udid = req.param('udid');
     engage.queryEngageApi({
         where: "properties[\"UDID\"] == \"" + udid + "\"" || ""
@@ -303,13 +294,6 @@ var getDataFromMixPB = function(req,res) {
         // results[i].$properties[r]
          saveData(jsondata);
     //    res.end();
-
     });
-};
-
-exports.test = function(req,res) {
-   find({"created_on": {"$gte": start, "$lt": end}})
-var day = moment.unix(1318781876);
-console.log(day);
 };
 
