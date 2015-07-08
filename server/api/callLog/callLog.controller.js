@@ -2,6 +2,7 @@
 
 var _ = require('lodash');
 var CallLog = require('./callLog.model');
+var Customer = require('../customer/customer.model');
 
 // Get list of callLogs
 exports.index = function(req, res) {
@@ -19,6 +20,72 @@ exports.show = function(req, res) {
     return res.json(callLog);
   });
 };
+
+exports.searchByDate = function(req,res) {
+
+   // return console.log(req.params);
+  var start = req.params.start;
+  var end = req.params.end;
+  CallLog.find({date: {"$gte": new Date(Date.parse(start)), "$lt": new Date(Date.parse(end))} },
+    function (err, transaction) {
+    if(err) { return handleError(res, err); }
+    return res.json(transaction);
+    console.log(transaction);
+  });
+
+};
+
+exports.searchByName = function(req,res) {
+
+    var flag=0;
+  
+   Customer.find({ $or: [{name:new RegExp(req.params.id, "i")},
+    {UDID: new RegExp(req.params.id, "i")},
+    {phone: new RegExp(req.params.id, "i")}] } ,
+    function (err, cust) {
+    if(err) { return handleError(res, err); }
+    if(!cust) { return res.send(404); }   
+       var cusarray=[];
+       for(var i=0;i<cust.length;i++){
+    CallLog.find({customer:cust[i]._id}, function (err, callLog) {
+    if(err) { return handleError(res, err); }
+    if(!callLog) { return res.send(404); }
+    for(var i =0;i<callLog.length;i++){
+        flag++;
+        cusarray.push(callLog[i].customer);
+    }
+    if(flag==callLog.length){
+    startFunctionOfTenQueries(cusarray);
+    }
+  });
+   }   
+   });
+
+    var startFunctionOfTenQueries = function(arrayOfCustomerID) {
+            var allTenResultOfTimeLine = [];
+
+            function uploader(i) {
+                if (i < arrayOfCustomerID.length) {
+                    findOneCallLogByID(arrayOfCustomerID[i], function(resulttt) {
+                        allTenResultOfTimeLine.push(resulttt);
+                        if (allTenResultOfTimeLine.length == arrayOfCustomerID.length) {
+                            tenQueries(allTenResultOfTimeLine);
+                        }
+                        uploader(i + 1)
+                    })
+                }
+            }
+            uploader(0);
+
+        }
+        //send response back to requested url
+    var tenQueries = function(allTenResult) {
+        return res.json(allTenResult);
+    }
+
+  
+};
+
 
 // Creates a new callLog in the DB.
 exports.create = function(req, res) {

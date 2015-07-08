@@ -5,7 +5,7 @@ var mongoose = require('mongoose'),
 
 var TransactionSchema = new Schema({
   amount: Number,
-  time: String,
+  time: Date,
   customer: {type: Schema.Types.ObjectId,
   	ref: 'Customer'},
   salesman: {type: Schema.Types.ObjectId,

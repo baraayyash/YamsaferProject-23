@@ -57,6 +57,18 @@ exports.destroy = function(req, res) {
   });
 };
 
+exports.searchByDate = function(req,res) {
+
+  Transaction.find({time: {"$gte": new Date(2015, 1, 14), "$lt": new Date(2017, 7, 14)} },
+    function (err, transaction) {
+    if(err) { return handleError(res, err); }
+    return res.json(transaction);
+    console.log(transaction);
+  });
+};
+
+
+
 function handleError(res, err) {
   return res.send(500, err);
 }
