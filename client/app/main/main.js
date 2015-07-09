@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('callLogsApp')
+angular.module('internsApp')
   .config(function ($stateProvider) {
     $stateProvider
       .state('main', {

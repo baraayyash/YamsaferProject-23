@@ -7,7 +7,7 @@ var router = express.Router();
 
 router.get('/', controller.index);
 router.get('/:id', controller.show);
-router.get('/name/:id', controller.showbyname);
+router.get('/search/:id', controller.showbyname);
 router.post('/', controller.create);
 router.post('/getDataFromMixP', controller.getDataFromMixP);
 router.get('/blocked/:id', controller.blocked);

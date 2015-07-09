@@ -6,6 +6,8 @@ var controller = require('./callLog.controller');
 var router = express.Router();
 
 router.get('/', controller.index);
+router.get('/searchByDate/:start/:end', controller.searchByDate);
+router.get('/search/:id', controller.searchByName);
 router.get('/timeline', controller.timeline);
 router.get('/:id', controller.show);
 router.post('/', controller.create);

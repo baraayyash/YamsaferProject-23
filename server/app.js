@@ -21,7 +21,7 @@ if(config.seedDB) { require('./config/seed'); }
 var app = express();
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
-  res.header( "Access-Control-Allow-Methods", "POST,GET,PUT,DELETE,OPTIONS,PATCH" );
+  res.header("Access-Control-Allow-Methods"," POST, GET, PUT, DELETE, OPTIONS,PATCH");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   next();
 });
@@ -42,9 +42,9 @@ io.on('connection', function(client) {
 	    console.log('a user connected: ' + client.id);
         console.log("****************** client connected ************");
 
-		client.on('trigerEvent', function(){
-        console.log('trigger is on');
-        client.broadcast.emit('timeline');
+		  client.on('trigerEvent', function(objLastCallLog){
+        console.log('trigger is on '+objLastCallLog);
+        client.broadcast.emit('timeline',objLastCallLog);
     
    		 })
 

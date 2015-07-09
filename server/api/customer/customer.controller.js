@@ -7,6 +7,8 @@ var Mixpanel = require('../services/mixpanel');
 var express = require('express');
 var engage = require('../services/engage');
 var CallLog = require('../callLog/callLog.model');
+var CallLogController = require('../callLog/callLog.controller');
+
 var ioOut = require('socket.io-client');
 
 // ///Get list of customers
@@ -20,27 +22,44 @@ exports.index = function(req, res) {
 // Get a single customer
 exports.show = function(req, res) {
   Customer.findById(req.params.id, function (err, customer) {
+    console.log(req.params.id);
     if(err) { return handleError(res, err); }
     if(!customer) { return res.send(404); }    
     Customer.populate(customer,{path:'transactions'},function(err,customer){
+      Customer.populate(customer,{path:'callLogs'},function(err,customer){
       return res.json(customer);
+    });
     });
   });
 };
 
 exports.showbyname = function(req, res) {
-   Customer.find({name:req.params.id}, function (err, customer) {
+
+
+   Customer.find({ $or: [{name:new RegExp(req.params.id, "i")},
+    {UDID: new RegExp(req.params.id, "i")},
+    {phone: new RegExp(req.params.id, "i")}] } ,
+    function (err, customer) {
     if(err) { return handleError(res, err); }
     if(!customer) { return res.send(404); }    
     Customer.populate(customer,{path:'transactions'},function(err,customer){
-     // return res.json(customer);
+      return res.json(customer);
     });
-     Customer.populate(customer,{path:'callLogs'},function(err,customer){
+     
+   });
+};
+
+
+exports.phone = function(req, res) {
+
+   Customer.find({phone:new RegExp(req.params.id, "i")}, function (err, customer) {
+    if(err) { return handleError(res, err); }
+    if(!customer) { return res.send(404); }    
+    Customer.populate(customer,{path:'transactions'},function(err,customer){
       return res.json(customer);
     });
    });
 };
-
 
 // Creates a new customer in the DB.
 exports.create = function(req, res) {
@@ -49,6 +68,7 @@ exports.create = function(req, res) {
     return res.json(201, customer);
     });
 };
+
 
 // Updates an existing customer in the DB.
 exports.update = function(req, res) {
@@ -77,11 +97,10 @@ exports.destroy = function(req, res) {
   });
 };
 
-//this function to see if customer is blocked or not
+// Creates a new customer in the DB.
 exports.blocked = function(req, res) {
     Customer.findById(req.params.id, function (err, customer) {
     if(err) {
-    // getDataFromMixPB(req.params.id,res);
       return res.json("false");
     }
     if(!customer) {  
@@ -96,14 +115,13 @@ exports.blocked = function(req, res) {
      if (err) { console.log("error creatng new log ");
          return handleError(res, err);
      }
-
      customer.callLogs.push(callLog);
      customer.save();
-     console.log("new call log added");
-     //add 
-    var socketOut = ioOut.connect('http://localhost:9000',{ 'force new connection': true });
-    socketOut.emit('trigerEvent');
-
+     CallLogController.sendBackLastCallLog(customer._id, function(resulttt) {
+      //emit  to server with latest callLogObject
+     var socketOut = ioOut.connect('http://localhost:9000',{ 'force new connection': true });
+     socketOut.emit('trigerEvent',resulttt);
+     })
        });
       if((customer.blocked)){
         return res.json("true");
@@ -116,48 +134,124 @@ exports.blocked = function(req, res) {
        
   };
 
-//this function to block single customer
-  exports.block = function(req, res) {
 
+// Creates a new customer in the DB.
+exports.block = function(req, res) {
 
-     var blockinfo ={
-    blocked: req.body.blocked,
-     };
-     console.log(blockinfo);
-    Customer.findOne({_id:req.body.id}, function (err, customer) {
-    if(err) { console.log("err");return handleError(res, err); }
-    if(!customer) {
-     return "does not exist";
-     }
-     if(customer) {
-      //console.log("updated");
-       var updated = _.merge(customer, blockinfo);
-    updated.save(function (err) {
-      if (err) { return handleError(res, err); }
-      return res.json("updated done");
-    });
-     }
-  });
-       
+    var blockinfo = {
+        blocked: req.body.blocked,
     };
+    console.log(blockinfo);
+    Customer.findOne({
+        _id: req.body.id
+    }, function(err, customer) {
+        if (err) {
+            console.log("err");
+            return handleError(res, err);
+        }
+        if (!customer) {
+            return "does not exist";
+        }
+        if (customer) {
+            var updated = _.merge(customer, blockinfo);
+            updated.save(function(err) {
+                if (err) {
+                    return handleError(res, err);
+                }
+                return res.json("updated done");
+            });
+        }
+    });
+
+};
+
+
+
 function handleError(res, err) {
   return res.send(500, err);
 }
 
+
 // saving data that got returned from mixpanel
   var saveData = function(data) {
-    //console.log(data);
-    var req ={
-    name: data["$first_name"]+ " " +data["$last_name"],
-    email: data["$email"],
-    phone: data["$phone"], 
-    amount: data.$transactions[0].$amount,
-    info: 'info',
-    blocked: false,
-    country_code : data["$country_code"]
-     };
 
-        Customer.create(req, function(err, customer) {
+    if(data["User Type"]=="iOS")
+    {   
+      var req ={
+
+        UDID: data["UDID"],
+        name: data["$first_name"],
+        timezone:data["$timezone"],
+        distinct_id:data["$distinct_id"],
+        email: data["$email"],
+        phone: data["$phone"],
+        country_code: data["$country_code"],
+        city:data["$city"],
+        region:data["$region"],
+        info: 'info',
+        blocked: false,
+        last_seen:data["$last_seen"],
+        Yozio_MetaData:data["Yozio MetaData"],
+        Current_Language:data["Current Language"],
+        last_checkin:data["$last_checkin"],
+        last_checkout:data["$last_checkout"],
+        ip:data["$ip"],
+        Count_of_Confirmed_Bookings:data["Count of Confirmed Bookings"],
+        Count_of_Online_Checkouts:data["Count of Online Checkouts"],
+        User_Type:data["User Type"],
+        user_ios:{
+          ios_app_release: data["$ios_app_release"],
+          ios_app_version: data["$ios_app_version"],
+          ios_device_model: data["$ios_device_model"],
+          ios_lib_version: data["$ios_lib_version"],
+          ios_version: data["$ios_version"]
+        }
+
+      };
+    }
+
+  
+
+    else
+    {
+      var req ={
+
+        UDID: data["UDID"],
+        name: data["$first_name"],
+        timezone:data["$timezone"],
+        distinct_id:data["$distinct_id"],
+        email: data["$email"],
+        phone: data["$phone"],
+        country_code: data["$country_code"],
+        city:data["$city"],
+        region:data["$region"],
+        info: 'info',
+        blocked: false,
+        last_seen:data["$last_seen"],
+        Yozio_MetaData:data["Yozio MetaData"],
+        Current_Language:data["Current Language"],
+        last_checkin:data["$last_checkin"],
+        last_checkout:data["$last_checkout"],
+        ip:data["$ip"],
+        Count_of_Confirmed_Bookings:data["Count of Confirmed Bookings"],
+        Count_of_Online_Checkouts:data["Count of Online Checkouts"],
+        User_Type:data["User Type"],
+        user_android:{
+        android_app_version: data["$android_app_version"],
+        android_app_version_code: data["$android_app_version_code"],
+        android_brand: data["$android_brand"],
+        android_devices: data["$android_devices"],
+        android_lib_version: data["$android_lib_version"],    
+        android_manufacturer: data["$android_manufacturer"],
+        android_model: data["$android_model"],
+        android_os: data["$android_os"],
+        android_os_version: data["$android_os_version"]
+        }  
+     };
+    }
+
+
+    Customer.create(req, function(err, customer) {
     if(err) { return handleError(res, err); }
       //console.log("added");
       for (var i in data.$transactions) {
@@ -168,52 +262,46 @@ function handleError(res, err) {
                  };
           Transaction.create(req, function(err, transaction) {
           if(err) { return handleError(res, err); }
-         // return res.json(201, transaction);
          customer.transactions.push(transaction);
-         customer.save();
+          customer.save();
           });
        }
-
-       var callLogReq={udid:"777",customer: customer._id};
+      
+       var callLogReq={customer: customer._id};
         CallLog.create(callLogReq, function(err, callLog) {
           if(err) { return handleError(res, err); }
          customer.callLogs.push(callLog);
          customer.save();
           });
        customer.save();
+
       return console.log("done");
     });
   };
   
-// get data from mixpanel 
-exports.getDataFromMixP = function(req,res) {
-  var udid = req.param('udid');
-    engage.queryEngageApi({
-        // where: "properties[\"$first_name\"] == \"" + "moh" + "\"" || ""
-        // where: "properties[\"UDID\"] == \"" + "55726" + "\"" || ""
-        where: "properties[\"UDID\"] == \"" + udid + "\"" || ""
 
+
+exports.getDataFromMixP = function(req,res) {
+ 
+  var udid = req.param('udid');
+
+       engage.queryEngageApi({
+        where: "properties[\"UDID\"] == \"" + udid  + "\"" || ""
     }, function(queryDone) {  
         res.json(queryDone);
         var jsondata = JSON.parse(queryDone);
-        // results[i].$properties[r]
          saveData(jsondata);
-        res.end();
-
     });
 };
 
 var getDataFromMixPB = function(req,res) {
-    console.log("hello");
+    var udid = req.param('udid');
     engage.queryEngageApi({
-        where: "properties[\"$UDID\"] == \"" + "55726" + "\"" || ""
+        where: "properties[\"UDID\"] == \"" + udid + "\"" || ""
     }, function(queryDone) {  
-     //   res.json(queryDone);
+        res.json(queryDone);
         var jsondata = JSON.parse(queryDone);
-        // results[i].$properties[r]
          saveData(jsondata);
-    //    res.end();
-
     });
 };
 
