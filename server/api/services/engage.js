@@ -77,15 +77,17 @@ var yargs = require('yargs')
 
 
 var argv = yargs.argv;
-//console.log(argv);
+
+// var MIXPANEL_API_KEY = "03e3e0fe6667d9380e7840b089fec718";
 var MIXPANEL_API_KEY = "1ababc3d5f6978c0ee038d13833640be";
-var MIXPANEL_API_SECRET = "7c57e6db8325f0b10699d0cccf225268";
+// var MIXPANEL_API_SECRET = "b1fa91438e3dd16b2028c5e087ee909e";
+var MIXPANEL_API_SECRET ="7c57e6db8325f0b10699d0cccf225268";
 
 var properties = typeof argv.properties === "string" ? argv.properties.split(" ") : [];
 // get required mp properties
 var required = typeof argv.required === "string" ? argv.required.split(" ") : [];
 
-// parse special [[DATE:<date string>]] tags
+// parse special7c57e6db8325f0b10699d0cccf225268 [[DATE:<date string>]] tags
 if (typeof argv.query === "string") {
     var matches;
     while (matches = argv.query.match(/\[\[DATE:(.*?)\]\]/)) {
@@ -178,15 +180,17 @@ function processResults(data, isLastQuery, fn1) {
     var i, csv, entry, len = data.results.length,
         output;
 
+// console.log(data);
+// console.log(data.properties);
     for (i = 0; i < len; i++) {
-        if (required.length > 0) {
+       if (required.length > 0) {
             // skip if not required properties present
-            if (!required.every(function(r) {
-                    return typeof data.results[i].$properties[r] !== 'undefined';
-                })) {
-                continue;
-            }
-        }
+           if (!required.every(function(r) {
+                   return typeof data.results[i].$properties[r] !== 'undefined';
+               })) {
+               continue;
+           }
+       }
 
         // include $distinct_id in property list for convenience
         if (data.results[i].$distinct_id) {

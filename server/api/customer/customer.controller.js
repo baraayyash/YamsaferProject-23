@@ -7,6 +7,9 @@ var Mixpanel = require('../services/mixpanel');
 var express = require('express');
 var engage = require('../services/engage');
 var CallLog = require('../callLog/callLog.model');
+var CallLogController = require('../callLog/callLog.controller');
+
+var ioOut = require('socket.io-client');
 
 // ///Get list of customers
 exports.index = function(req, res) {
@@ -19,6 +22,7 @@ exports.index = function(req, res) {
 // Get a single customer
 exports.show = function(req, res) {
   Customer.findById(req.params.id, function (err, customer) {
+    console.log(req.params.id);
     if(err) { return handleError(res, err); }
     if(!customer) { return res.send(404); }    
     Customer.populate(customer,{path:'transactions'},function(err,customer){
@@ -97,7 +101,6 @@ exports.destroy = function(req, res) {
 exports.blocked = function(req, res) {
     Customer.findOne({UDID:req.params.id}, function (err, customer) {
     if(err) {
-    // getDataFromMixPB(req.params.id,res);
       return res.json("false");
     }
     if(!customer) {  
@@ -106,7 +109,7 @@ exports.blocked = function(req, res) {
       res.json("false");
      }
     if(customer) {
-      
+
       //each time customer exist  update  call logs with new current Time
        var newCallLogReq = {customer: customer._id};
       CallLog.create(newCallLogReq, function(err, callLog) {
@@ -115,7 +118,12 @@ exports.blocked = function(req, res) {
      }
      customer.callLogs.push(callLog);
      customer.save();
-     //console.log("new call log added");
+     CallLogController.sendBackLastCallLog(customer._id, function(resulttt) {
+      //emit  to server with latest callLogObject
+     var socketOut = ioOut.connect('http://localhost:9000',{ 'force new connection': true });
+     socketOut.emit('trigerEvent',resulttt);
+     })
+
        });
       if((customer.blocked)){
         return res.json("true");
@@ -128,30 +136,38 @@ exports.blocked = function(req, res) {
        
   };
 
+// Creates a new customer in the DB.
+exports.block = function(req, res) {
 
-// Block a customer
-  exports.block = function(req, res) {
 
-     var blockinfo ={
-    blocked: req.body.blocked,
-     };
-     console.log(blockinfo);
-    Customer.findOne({_id:req.body.id}, function (err, customer) {
-    if(err) { console.log("err");return handleError(res, err); }
-    if(!customer) {
-     return "does not exist";
-     }
-     if(customer) {
-      //console.log("updated");
-       var updated = _.merge(customer, blockinfo);
-    updated.save(function (err) {
-      if (err) { return handleError(res, err); }
-      return res.json("updated done");
-    });
-     }
-  });
-       
+    var blockinfo = {
+        blocked: req.body.blocked,
     };
+
+    console.log(blockinfo);
+    Customer.findOne({
+        _id: req.body.id
+    }, function(err, customer) {
+        if (err) {
+            console.log("err");
+            return handleError(res, err);
+        }
+        if (!customer) {
+            return "does not exist";
+        }
+        if (customer) {
+            var updated = _.merge(customer, blockinfo);
+            updated.save(function(err) {
+                if (err) {
+                    return handleError(res, err);
+                }
+                return res.json("updated done");
+            });
+        }
+    });
+
+};
+
 function handleError(res, err) {
   return res.send(500, err);
 }
@@ -236,7 +252,7 @@ function handleError(res, err) {
     }
 
 
-        Customer.create(req, function(err, customer) {
+    Customer.create(req, function(err, customer) {
     if(err) { return handleError(res, err); }
       //console.log("added");
       for (var i in data.$transactions) {
@@ -247,9 +263,7 @@ function handleError(res, err) {
                  };
           Transaction.create(req, function(err, transaction) {
           if(err) { return handleError(res, err); }
-         // return res.json(201, transaction);
          customer.transactions.push(transaction);
-
           customer.save();
           });
        }
@@ -269,15 +283,13 @@ function handleError(res, err) {
 //this function will be called when data from mix panel needed.
 exports.getDataFromMixP = function(req, res) {
   var udid = req.param('udid');
-  console.log("udid:"+udid);
-    engage.queryEngageApi({
-        where: "properties[\"UDID\"] == \"" + udid + "\"" || ""
+       engage.queryEngageApi({
+        where: "properties[\"UDID\"] == \"" + udid  + "\"" || ""
     }, function(queryDone) {  
         res.json(queryDone);
         var jsondata = JSON.parse(queryDone);
-        // results[i].$properties[r]
-        // saveData(jsondata);
-        //res.end();
+         // saveData(jsondata);
+
     });
 
 };
@@ -291,9 +303,7 @@ var getDataFromMixPB = function(req,res) {
         where: "properties[\"UDID\"] == \"" + udid  + "\"" || ""
     }, function(queryDone) {  
         var jsondata = JSON.parse(queryDone);
-        // results[i].$properties[r]
          saveData(jsondata);
-    //    res.end();
 
     });
 };
