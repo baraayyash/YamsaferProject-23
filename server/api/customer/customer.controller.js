@@ -33,8 +33,8 @@ exports.show = function(req, res) {
   });
 };
 
+//search for a customer using name,phone,udid.
 exports.showbyname = function(req, res) {
-
 
    Customer.find({ $or: [{name:new RegExp(req.params.id, "i")},
     {UDID: new RegExp(req.params.id, "i")},
@@ -49,7 +49,7 @@ exports.showbyname = function(req, res) {
    });
 };
 
-
+//serch for a customer using phone number
 exports.phone = function(req, res) {
 
    Customer.find({phone:new RegExp(req.params.id, "i")}, function (err, customer) {
@@ -99,13 +99,14 @@ exports.destroy = function(req, res) {
 
 // Creates a new customer in the DB.
 exports.blocked = function(req, res) {
-    Customer.findById(req.params.id, function (err, customer) {
+    Customer.findOne({UDID:req.params.id}, function (err, customer) {
     if(err) {
       return res.json("false");
     }
     if(!customer) {  
       getDataFromMixPB(req.params.id,res);
-    return res.json("false");
+      //console.log("not found");
+      res.json("false");
      }
     if(customer) {
 
@@ -122,6 +123,7 @@ exports.blocked = function(req, res) {
      var socketOut = ioOut.connect('http://localhost:9000',{ 'force new connection': true });
      socketOut.emit('trigerEvent',resulttt);
      })
+
        });
       if((customer.blocked)){
         return res.json("true");
@@ -134,13 +136,14 @@ exports.blocked = function(req, res) {
        
   };
 
-
 // Creates a new customer in the DB.
 exports.block = function(req, res) {
+
 
     var blockinfo = {
         blocked: req.body.blocked,
     };
+
     console.log(blockinfo);
     Customer.findOne({
         _id: req.body.id
@@ -165,8 +168,6 @@ exports.block = function(req, res) {
 
 };
 
-
-
 function handleError(res, err) {
   return res.send(500, err);
 }
@@ -174,7 +175,7 @@ function handleError(res, err) {
 
 // saving data that got returned from mixpanel
   var saveData = function(data) {
-
+  
     if(data["User Type"]=="iOS")
     {   
       var req ={
@@ -275,33 +276,34 @@ function handleError(res, err) {
           });
        customer.save();
 
-      return console.log("done");
+      //return console.log("done");
     });
   };
   
-
-
-exports.getDataFromMixP = function(req,res) {
- 
+//this function will be called when data from mix panel needed.
+exports.getDataFromMixP = function(req, res) {
   var udid = req.param('udid');
-
        engage.queryEngageApi({
         where: "properties[\"UDID\"] == \"" + udid  + "\"" || ""
     }, function(queryDone) {  
         res.json(queryDone);
         var jsondata = JSON.parse(queryDone);
-         saveData(jsondata);
+         // saveData(jsondata);
+
     });
+
 };
 
+
+//this function will be called when data from mix panel needed.
 var getDataFromMixPB = function(req,res) {
-    var udid = req.param('udid');
-    engage.queryEngageApi({
-        where: "properties[\"UDID\"] == \"" + udid + "\"" || ""
+  var udid = req;
+  console.log("udid:"+udid);
+       engage.queryEngageApi({
+        where: "properties[\"UDID\"] == \"" + udid  + "\"" || ""
     }, function(queryDone) {  
-        res.json(queryDone);
         var jsondata = JSON.parse(queryDone);
          saveData(jsondata);
+
     });
 };
-

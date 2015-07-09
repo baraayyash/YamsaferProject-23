@@ -23,10 +23,12 @@ exports.show = function(req, res) {
 
 exports.searchByDate = function(req,res) {
 
-   // return console.log(req.params);
+  console.log(req.params);
   var start = req.params.start;
   var end = req.params.end;
-  CallLog.find({date: {"$gte": new Date(Date.parse(start)), "$lt": new Date(Date.parse(end))} },
+   // console.log(Date.parse(start));
+   // console.log(Date.parse(end));
+  CallLog.find({date: {"$gte": new Date(start), "$lt": new Date(end)} },
     function (err, transaction) {
     if(err) { return handleError(res, err); }
     return res.json(transaction);
