@@ -4,7 +4,7 @@ var express = require('express');
 var controller = require('./customer.controller');
 
 var router = express.Router();
-
+//55726
 router.get('/', controller.index);
 router.get('/:id', controller.show);
 router.get('/search/:id', controller.showbyname);

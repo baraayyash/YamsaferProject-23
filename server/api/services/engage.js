@@ -78,8 +78,8 @@ var yargs = require('yargs')
 
 var argv = yargs.argv;
 //console.log(argv);
-var MIXPANEL_API_KEY = "03e3e0fe6667d9380e7840b089fec718";
-var MIXPANEL_API_SECRET = "b1fa91438e3dd16b2028c5e087ee909e";
+var MIXPANEL_API_KEY = "1ababc3d5f6978c0ee038d13833640be";
+var MIXPANEL_API_SECRET = "7c57e6db8325f0b10699d0cccf225268";
 
 var properties = typeof argv.properties === "string" ? argv.properties.split(" ") : [];
 // get required mp properties
