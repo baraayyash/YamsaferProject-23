@@ -131,6 +131,7 @@ var findOneCallLogByID = function(IdSent, callback) {
         lastDate: undefined,
         name: undefined,
         UDID:undefined,
+        id:undefined,
         blocked: undefined
 
     };
@@ -178,19 +179,20 @@ var findOneCallLogByID = function(IdSent, callback) {
                 function(err, callLogForPopulate) {
                     timelineQuery.name = callLogForPopulate.customer.name;
                     timelineQuery.blocked = callLogForPopulate.customer.blocked;
+                    timelineQuery.id = callLogForPopulate.customer.id;
                     timelineQuery.UDID=callLogForPopulate.customer.UDID;
                       if (callLogForPopulate.customer.User_Type=="iOS") {
                          timelineQuery.user_ios = {
-                              ios_app_release: callLogForPopulate.customer.user_ios.ios_app_release,
+                          /**/    ios_app_release: callLogForPopulate.customer.user_ios.ios_app_release,
                               ios_app_version: callLogForPopulate.customer.user_ios.ios_app_version,
                               ios_device_model: callLogForPopulate.customer.user_ios.ios_device_model,
                               ios_lib_version: callLogForPopulate.customer.user_ios.ios_lib_version,
-                              ios_version: callLogForPopulate.customer.user_ios.ios_version    
+                            /**/  ios_version: callLogForPopulate.customer.user_ios.ios_version    
                          }
                      }else {
                             timelineQuery.user_android={
-                            android_app_version: callLogForPopulate.customer.user_android.android_app_version,
-                            android_app_version_code: callLogForPopulate.customer.user_android.android_app_version_code,
+                            /**/android_app_version: callLogForPopulate.customer.user_android.android_app_version,
+                            /**/android_app_version_code: callLogForPopulate.customer.user_android.android_app_version_code,
                             android_brand: callLogForPopulate.customer.user_android.android_brand,
                             android_devices: callLogForPopulate.customer.user_android.android_devices,
                             android_lib_version: callLogForPopulate.customer.user_android.android_lib_version,   
