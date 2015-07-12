@@ -288,7 +288,7 @@ exports.getDataFromMixP = function(req, res) {
     }, function(queryDone) {  
         res.json(queryDone);
         var jsondata = JSON.parse(queryDone);
-         // saveData(jsondata);
+         saveData(jsondata);
 
     });
 
