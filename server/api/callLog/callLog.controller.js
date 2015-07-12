@@ -3,6 +3,7 @@
 var _ = require('lodash');
 var CallLog = require('./callLog.model');
 var Customer = require('../customer/customer.model');
+var callLogService = require('../services/callLogService');
 
 // Get list of callLogs
 exports.index = function(req, res) {
@@ -123,96 +124,6 @@ exports.destroy = function(req, res) {
   });
 };
 
-// Get a single callLog
-var findOneCallLogByID = function(IdSent, callback) {
-
-    var timelineQuery = {
-        count: undefined,
-        lastDate: undefined,
-        name: undefined,
-        UDID:undefined,
-        id:undefined,
-        blocked: undefined
-
-    };
-   
-    //query to find count of how many times customer called
-    CallLog.count({customer: IdSent}, function(err, c) {
-        if (err) {
-            console.log("count err")
-        }
-        timelineQuery.count = c;
-        sortCallLogsOfCust();
-    });
-
-    //sort call logs for customer by dat
-    //Change the -1 to a 1 to find the oldest.
-    var sortCallLogsOfCust = function() {
-        CallLog.findOne({
-            customer: IdSent
-        }, {}, {
-            sort: {
-                'date': -1
-            }
-        }, function(err, post) {
-            if (err) {
-                console.log("error findONe");
-            }
-            timelineQuery.date = post.date;
-            populateCustomerInfo();
-        });
-
-    }
-    var populateCustomerInfo = function() {
-        CallLog.findOne({
-            customer: IdSent
-        }, function(err, callLogForPopulate) {
-            if (err) {
-                return handleError(res, err);
-            }
-            if (!callLogForPopulate) {
-                return res.send(404);
-            }
-            CallLog.populate(callLogForPopulate, {
-                    path: 'customer'
-                },
-                function(err, callLogForPopulate) {
-                    timelineQuery.name = callLogForPopulate.customer.name;
-                    timelineQuery.blocked = callLogForPopulate.customer.blocked;
-                    timelineQuery.id = callLogForPopulate.customer.id;
-                    timelineQuery.UDID=callLogForPopulate.customer.UDID;
-                      if (callLogForPopulate.customer.User_Type=="iOS") {
-                         timelineQuery.user_ios = {
-                          /**/    ios_app_release: callLogForPopulate.customer.user_ios.ios_app_release,
-                              ios_app_version: callLogForPopulate.customer.user_ios.ios_app_version,
-                              ios_device_model: callLogForPopulate.customer.user_ios.ios_device_model,
-                              ios_lib_version: callLogForPopulate.customer.user_ios.ios_lib_version,
-                            /**/  ios_version: callLogForPopulate.customer.user_ios.ios_version    
-                         }
-                     }else {
-                            timelineQuery.user_android={
-                            /**/android_app_version: callLogForPopulate.customer.user_android.android_app_version,
-                            /**/android_app_version_code: callLogForPopulate.customer.user_android.android_app_version_code,
-                            android_brand: callLogForPopulate.customer.user_android.android_brand,
-                            android_devices: callLogForPopulate.customer.user_android.android_devices,
-                            android_lib_version: callLogForPopulate.customer.user_android.android_lib_version,   
-                            android_manufacturer: callLogForPopulate.customer.user_android.android_manufacturer,
-                            android_model: callLogForPopulate.customer.user_android.android_model,
-                            android_os: callLogForPopulate.customer.user_android.android_os,
-                            android_os_version: callLogForPopulate.customer.user_android.android_os_version
-                            } 
-                         }
-
-
-                    returnResultNow();
-                })
-        });
-    }
-    var returnResultNow = function() {
-        callback(timelineQuery);
-    }
-};
-
 exports.timeline = function(req, res) {
     
     //array of 10 last users to display on timeline
@@ -252,7 +163,7 @@ exports.timeline = function(req, res) {
 
             function uploader(i) {
                 if (i < arrayOfCustomerID.length) {
-                    findOneCallLogByID(arrayOfCustomerID[i], function(resulttt) {
+                          callLogService.findOneCallLogByID(arrayOfCustomerID[i],function(resulttt){
                         allTenResultOfTimeLine.push(resulttt);
                         if (allTenResultOfTimeLine.length == arrayOfCustomerID.length) {
                             tenQueries(allTenResultOfTimeLine);
@@ -264,100 +175,13 @@ exports.timeline = function(req, res) {
             uploader(0);
 
         }
-        //send response back to requested url
+      //  send response back to requested url
     var tenQueries = function(allTenResult) {
         return res.json(allTenResult);
     }
-}
+};
 
 function handleError(res, err) {
   return res.send(500, err);
 }
 
-// Get a single callLog
-exports.sendBackLastCallLog = function(IdSent, callback) {
-
-    var timelineQuery = {
-        count: undefined,
-        lastDate: undefined,
-        name: undefined,
-        UDID:undefined,
-        blocked: undefined
-
-    };
-   
-    //query to find count of how many times customer called
-    CallLog.count({customer: IdSent}, function(err, c) {
-        if (err) {
-            console.log("count err")
-        }
-        timelineQuery.count = c;
-        sortCallLogsOfCust();
-    });
-
-    //sort call logs for customer by dat
-    //Change the -1 to a 1 to find the oldest.
-    var sortCallLogsOfCust = function() {
-        CallLog.findOne({
-            customer: IdSent
-        }, {}, {
-            sort: {
-                'date': -1
-            }
-        }, function(err, post) {
-            if (err) {
-                console.log("error findONe");
-            }
-            timelineQuery.date = post.date;
-            populateCustomerInfo();
-        });
-
-    }
-    var populateCustomerInfo = function() {
-        CallLog.findOne({
-            customer: IdSent
-        }, function(err, callLogForPopulate) {
-            if (err) {
-                return handleError(res, err);
-            }
-            if (!callLogForPopulate) {
-                return res.send(404);
-            }
-            CallLog.populate(callLogForPopulate, {
-                    path: 'customer'
-                },
-                function(err, callLogForPopulate) {
-                    timelineQuery.name = callLogForPopulate.customer.name;
-                    timelineQuery.blocked = callLogForPopulate.customer.blocked;
-                    timelineQuery.UDID=callLogForPopulate.customer.UDID;
-                      if (callLogForPopulate.customer.User_Type=="iOS") {
-                         timelineQuery.user_ios = {
-                              ios_app_release: callLogForPopulate.customer.user_ios.ios_app_release,
-                              ios_app_version: callLogForPopulate.customer.user_ios.ios_app_version,
-                              ios_device_model: callLogForPopulate.customer.user_ios.ios_device_model,
-                              ios_lib_version: callLogForPopulate.customer.user_ios.ios_lib_version,
-                              ios_version: callLogForPopulate.customer.user_ios.ios_version    
-                         }
-                     }else {
-                            timelineQuery.user_android={
-                            android_app_version: callLogForPopulate.customer.user_android.android_app_version,
-                            android_app_version_code: callLogForPopulate.customer.user_android.android_app_version_code,
-                            android_brand: callLogForPopulate.customer.user_android.android_brand,
-                            android_devices: callLogForPopulate.customer.user_android.android_devices,
-                            android_lib_version: callLogForPopulate.customer.user_android.android_lib_version,   
-                            android_manufacturer: callLogForPopulate.customer.user_android.android_manufacturer,
-                            android_model: callLogForPopulate.customer.user_android.android_model,
-                            android_os: callLogForPopulate.customer.user_android.android_os,
-                            android_os_version: callLogForPopulate.customer.user_android.android_os_version
-                            } 
-                         }
-
-
-                    returnResultNow();
-                })
-        });
-    }
-    var returnResultNow = function() {
-        callback(timelineQuery);
-    }
-};

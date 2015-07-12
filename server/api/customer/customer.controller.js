@@ -8,8 +8,9 @@ var express = require('express');
 var engage = require('../services/engage');
 var customerService = require('../services/customerService');
 var CallLog = require('../callLog/callLog.model');
-var CallLogController = require('../callLog/callLog.controller');
 var ioOut = require('socket.io-client');
+var callLogService = require('../services/callLogService');
+
 
 //Get list of customers
 exports.index = function(req, res) {
@@ -156,7 +157,7 @@ exports.blocked = function(req, res) {
                 }
                 customer.callLogs.push(callLog);
                 customer.save();
-                CallLogController.sendBackLastCallLog(customer._id, function(resulttt) {
+                callLogService.findOneCallLogByID(customer._id, function(resulttt){
                     //emit to server with latest callLogObject
                     var socketOut = ioOut.connect('http://localhost:9000', {
                         'force new connection': true
