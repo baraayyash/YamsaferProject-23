@@ -38,7 +38,8 @@ exports.show = function(req, res) {
             Customer.populate(customer, {
                 path: 'callLogs'
             }, function(err, customer) {
-                return res.json(customer);
+                     return res.json(customer);
+
             });
         });
     });

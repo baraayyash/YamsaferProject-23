@@ -2,10 +2,11 @@ var _ = require('lodash');
 var Customer = require('../customer/customer.model');
 var Transaction = require('../transaction/transaction.model');
 var CallLog = require('../callLog/callLog.model');
-
+var cityToCoor=require('../services/cityToCoordinates');
 
 //saving data that returned from MixPanel
 exports.createCustomer = function(data) {
+
     var req = {
         UDID: data.UDID,
         name: data.$first_name,
@@ -26,10 +27,11 @@ exports.createCustomer = function(data) {
         ip: data.$ip,
         Count_of_Confirmed_Bookings: data["Count of Confirmed Bookings"],
         Count_of_Online_Checkouts: data["Count of Online Checkouts"],
-        User_Type: data["User Type"]
+        User_Type: data["User Type"],
+        cityLng:undefined,
+        cityLat:undefined
 
     };
-
 
     if (data["User Type"] == "iOS") {
         req.user_ios = {
@@ -59,6 +61,7 @@ exports.createCustomer = function(data) {
         if (err) {
             return handleError(res, err);
         }
+
         for (var i in data.$transactions) {
             var req = {
                 amount: data.$transactions[i].$amount,
@@ -84,7 +87,14 @@ exports.createCustomer = function(data) {
             customer.callLogs.push(callLog);
             customer.save();
         });
+                    cityToCoor.getLngLat(data.$country_code,function (lng,lat){
+              customer.cityLng=lng;
+              customer.cityLat=lat;
+            customer.save();
+                });
+    
         customer.save();
 
     });
+
 };

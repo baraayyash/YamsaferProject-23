@@ -30,6 +30,8 @@ var CustomerSchema = new Schema({
   Count_of_Online_Checkouts:Number,
   User_Type:String,
   ip:String,
+  cityLng:String,
+  cityLat:String,
   user_ios:{
     ios_app_release: String,
     ios_app_version: String,
