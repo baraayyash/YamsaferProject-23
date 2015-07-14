@@ -11,13 +11,50 @@
 
 var _ = require('lodash');
 var Thing = require('./thing.model');
-
+//var Mysql=require('../services/mysql');
 // Get list of things
 exports.index = function(req, res) {
-  Thing.find(function (err, things) {
-    if(err) { return handleError(res, err); }
-    return res.json(200, things);
-  });
+
+
+var mysql      = require('mysql');
+var connection = mysql.createConnection({
+  driver    : 'mysql',
+ host      : 'api-staging.yamsafer.me',
+ database  :  'thewall',
+ user  : 'root',
+ password  : 'yamsaferCRMteam',
+ charset   : 'utf8',
+ collation : 'utf8_unicode_ci',
+ prefix    : '',
+});
+
+connection.connect();
+
+ var req = {
+         UDID:1014 ,
+         email:"faris@yamsafer.me",
+         phone: "972544735168",
+     };
+
+connection.query('SELECT * from properties where id = 10120  limit 0,10', function(err, rows, fields) {
+  if (err) throw err;
+ res.json(rows);
+// console.log(rows);
+
+rows.forEach(function(item) { console.log('id: '+item.id) });
+
+});
+
+connection.query('SELECT DISTINCT orders.id,orders.no_show,orders.checkin_date,orders.checkout_date,orders.hotel_id,orders.hotel_name,orders.total_price,orders.created_at,orders.cancelled FROM orders INNER JOIN customers ON orders.customer_id=customers.id where udid = '+req.UDID+' or email= '+' "  ' +  req.email+'  " '+ ' or phone='+req.phone+'  limit 0,100', function(err, rows, fields) {
+  if (err) throw err;
+ // res.json(rows);
+// console.log(rows);
+
+rows.forEach(function(item) { console.log('id: '+item.id) });
+
+});
+
+
 };
 
 // Get a single thing
