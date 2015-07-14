@@ -4,7 +4,6 @@ var CallLog = require('../callLog/callLog.model');
 
 // Get a single callLog
 exports.findOneCallLogByID = function(IdSent, callback) {
-
     var timelineQuery = {
         count: undefined,
         lastDate: undefined,
@@ -58,6 +57,7 @@ exports.findOneCallLogByID = function(IdSent, callback) {
                     path: 'customer'
                 },
                 function(err, callLogForPopulate) {
+                    if(callLogForPopulate.customer!==null){
                     timelineQuery.name = callLogForPopulate.customer.name;
                     timelineQuery.blocked = callLogForPopulate.customer.blocked;
                     timelineQuery.id = callLogForPopulate.customer.id;
@@ -87,7 +87,7 @@ exports.findOneCallLogByID = function(IdSent, callback) {
                             android_os_version: callLogForPopulate.customer.user_android.android_os_version
                         }
                     }
-
+                }
                             callback(timelineQuery);
                     //returnResultNow();
                 })

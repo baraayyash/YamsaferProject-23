@@ -2,7 +2,7 @@ var _ = require('lodash');
 var Customer = require('../customer/customer.model');
 var Transaction = require('../transaction/transaction.model');
 var CallLog = require('../callLog/callLog.model');
-var cityToCoor=require('../services/cityToCoordinates');
+var cityToCoor=require('./cityToCoordinates');
 
 //saving data that returned from MixPanel
 exports.createCustomer = function(data) {
