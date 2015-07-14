@@ -62,7 +62,6 @@ exports.createCustomer = function(data) {
             return handleError(res, err);
         }
 
-
  // fetching data from Yamsafer
 
     var mysql      = require('mysql');
@@ -107,7 +106,7 @@ console.log("id hotel : "+ rows[0].hotel_id);
                   no_show: item.no_show,
                   checkin_date: item.checkin_date,
                   checkout_date: item.checkout_date,
-                  Hotle: item.hotel_name,
+                  Hotel: item.hotel_name,
                   cancelled: item.cancelled,
                   customer: customer._id
             };

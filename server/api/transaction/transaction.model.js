@@ -11,7 +11,7 @@ var TransactionSchema = new Schema({
   no_show:Number,
   checkin_date:Date,
   checkout_date:Date,
-  Hotle:String,
+  Hotel:String,
   total_price:Number,
   cancelled:Number,
   nights:Number,
