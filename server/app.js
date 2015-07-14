@@ -11,6 +11,19 @@ var express = require('express');
 var mongoose = require('mongoose');
 var config = require('./config/environment');
 
+var mysql      = require('mysql');
+var connection = mysql.createConnection({
+  driver    : 'mysql',
+ host      : 'api-staging.yamsafer.me',
+ database  :  'thewall',
+ user  : 'root',
+ password  : 'yamsaferCRMteam',
+ charset   : 'utf8',
+ collation : 'utf8_unicode_ci',
+ prefix    : '',
+});
+
+connection.connect();
 // Connect to database
 mongoose.connect(config.mongo.uri, config.mongo.options);
 
@@ -38,19 +51,19 @@ server.listen(config.port, config.ip, function () {
 
 var io = require('socket.io')(server);
 io.on('connection', function(client) {
-	    
+
 	    console.log('a user connected: ' + client.id);
         console.log("****************** client connected ************");
 
 		  client.on('trigerEvent', function(objLastCallLog){
         console.log('trigger is on '+objLastCallLog);
         client.broadcast.emit('timeline',objLastCallLog);
-    
+
    		 })
 
     	client.on('disconnect', function(){
         console.log( ' has disconnected from the chat.' + client.id);
-    
+
     	});
 
 });
