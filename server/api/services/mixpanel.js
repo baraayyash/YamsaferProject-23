@@ -25,6 +25,8 @@ exports.getDataFromMixPB = function(req, callback) {
         where: "properties[\"UDID\"] == \"" + udid + "\"" || ""
     }, function(queryDone) {
         var jsondata = JSON.parse(queryDone);
+        if(jsondata)
         callback(jsondata);
+
     });
 };
