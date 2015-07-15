@@ -147,6 +147,12 @@ exports.blocked = function(req, res) {
             return res.json("false");
         }
         if (customer) {
+// the customer exists so we need to update his data
+            Mixpanel.getDataFromMixPB(req.params.id,
+                function(data) {
+                  customerService.updateCustomer(data,customer); //update the customer.
+                });
+
             //each time customer exist  update  call logs with new current Time
             var newCallLogReq = {
                 customer: customer._id
