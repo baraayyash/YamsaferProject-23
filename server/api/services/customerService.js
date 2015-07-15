@@ -16,8 +16,8 @@ var connection = mysql.createConnection({
     collation: 'utf8_unicode_ci',
     prefix: '',
 });
-
 connection.connect();
+
 
 //saving data that returned from MixPanel
 exports.createCustomer = function(data) {
@@ -71,9 +71,9 @@ exports.createCustomer = function(data) {
     }
 
     //create the customer with his transaction
-    Customer.create(req, function(err, res, customer) {
+    Customer.create(req, function(err, customer) {
         if (err) {
-            return handleError(res, err);
+            return console.log(err);
         }
 
         // fetching data from Yamsafer
@@ -83,7 +83,6 @@ exports.createCustomer = function(data) {
             email: "faris@yamsafer.me",
             phone: "972544735168",
         };
-
 
         connection.query('SELECT DISTINCT orders.id,orders.no_show,orders.checkin_date,orders.checkout_date,orders.hotel_id,orders.hotel_name,orders.total_price,orders.created_at,orders.cancelled FROM orders INNER JOIN customers ON orders.customer_id=customers.id where udid = ' + req.UDID + ' or email= ' + ' "  ' + req.email + '  " ' + ' or phone=' + req.phone + '  limit 0,100', function(err, rows, fields) {
             if (err) throw err;
@@ -112,10 +111,9 @@ exports.createCustomer = function(data) {
                         customer: customer._id
                     };
 
-                    //save the transaction into the customer profile
                     Transaction.create(req, function(err, transaction) {
                         if (err) {
-                            return handleError(res, err);
+                            return console.log(err);
                         }
                         customer.transactions.push(transaction);
                         customer.save();
@@ -131,7 +129,7 @@ exports.createCustomer = function(data) {
         };
         CallLog.create(callLogReq, function(err, callLog) {
             if (err) {
-                return handleError(res, err);
+                console.log(err);
             }
             customer.callLogs.push(callLog);
             customer.save();
@@ -203,17 +201,17 @@ exports.updateCustomer = function(data, customer) {
 
     //create the customer with his transaction
 
-    Customer.findById(customer._id, function(err, res, customer) {
+    Customer.findById(customer._id, function(err, customer) {
         if (err) {
-            return handleError(res, err);
+            return console.log(err);
         }
         if (!customer) {
-            return res.send(404);
+            return console.log(404);
         }
         var updated = _.merge(customer, req);
         updated.save(function(err) {
             if (err) {
-                return handleError(res, err);
+                return console.log(err);
             }
 
 
@@ -225,22 +223,16 @@ exports.updateCustomer = function(data, customer) {
                 phone: "972544735168",
             };
 
-
             connection.query('SELECT DISTINCT orders.id,orders.no_show,orders.checkin_date,orders.checkout_date,orders.hotel_id,orders.hotel_name,orders.total_price,orders.created_at,orders.cancelled FROM orders INNER JOIN customers ON orders.customer_id=customers.id where udid = ' + req.UDID + ' or email= ' + ' "  ' + req.email + '  " ' + ' or phone=' + req.phone + '  limit 0,100', function(err, rows, fields) {
                 if (err) throw err;
-                //res.json(rows);
-                // con//sole.log(rows);
-                var lng;
-                var lat;
-
 
                 rows.forEach(function(item) {
 
                     Transaction.findOne({
                         Yamsafer_id: item.id
-                    }, function(err, res, transaction) {
+                    }, function(err, transaction) {
                         if (err) {
-                            return handleError(res, err);
+                            return console.log(err);
                         }
                         if (!transaction) {
                             console.log("new trans ! ");
@@ -261,9 +253,9 @@ exports.updateCustomer = function(data, customer) {
                                     customer: customer._id
                                 };
 
-                                Transaction.create(req, function(err, res, transaction) {
+                                Transaction.create(req, function(err, transaction) {
                                     if (err) {
-                                        return handleError(res, err);
+                                        return console.log(err);
                                     }
                                     customer.transactions.push(transaction);
                                     customer.save();
@@ -277,8 +269,8 @@ exports.updateCustomer = function(data, customer) {
         });
 
     });
-
 };
+
 
 function handleError(res, err) {
     return res.send(500, err);
