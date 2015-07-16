@@ -1,93 +1,92 @@
 <div class="portlet light bordered">
-
-  <div class="portlet-title">
-      <div class="caption font-dark">
-        <span class="caption-subject bold uppercase">Customers' Data:</span>
-        <!-- <span class="caption-helper">distance stats...</span> -->
-      </div>
-      <div class="actions">
-          <div class="col-lg-3">
-            <div class="input-group">
-              <input type="text" class="form-control" placeholder="Search..." ng-model="cust">
-              <span class="input-group-btn">
+    <div class="portlet-title">
+        <div class="caption font-dark">
+            <span class="caption-subject bold uppercase">Customers' Data:</span>
+            <!-- <span class="caption-helper">distance stats...</span> -->
+        </div>
+        <div class="actions">
+            <div class="col-lg-3">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search..." ng-model="cust">
+                    <span class="input-group-btn">
               <!-- <button class="btn btn-default" type="button" ng-click="searchLogs(search)"> -->
                 <button class="btn btn-default" type="button">
                   <i class="fa fa-search"></i>
                 </button>
               </span>
-            </div><!-- /input-group -->
-          </div><!-- /.col-lg-3 -->
+                </div>
+                <!-- /input-group -->
+            </div>
+            <!-- /.col-lg-3 -->
         </div>
-  </div>
-
-
-  <!-- updating modal -->
-<div class="container" ng-show="show">
-    <div class="row">
-        <div class="col-md-offset-30 col-md-50">
-            <div class="form-login">
-            <h4>Update User's Data:</h4>
-            Name: <input type="text" ng-model="name" class="form-control input-sm chat-input" placeholder="Name"  />
-            </br>
-            Email: <input type="email" ng-model="email" class="form-control input-sm chat-input" placeholder="Email"  />
-            </br>
-            Country: <input type="text" ng-model="country" class="form-control input-sm chat-input" placeholder="Country"  />
-            </br>
-          
-            <div class="wrapper">
-            <span class="group-btn">     
+    </div>
+    <!-- updating modal -->
+    <div class="container" style="margin-left:600px; margin-right:50px;" ng-show="show">
+        <div class="row">
+            <div class="col-md-offset-30 col-md-50">
+                <div class="form-login">
+                    <h4>Update User's Data:</h4>
+                     Name:
+                    <input type="text" ng-model="editedName" class="form-control input-sm chat-input" placeholder="Name" />
+                    </br>
+                    Email:
+                    <input type="email" ng-model="editedEmail" class="form-control input-sm chat-input" placeholder="Email" />
+                    <h1 style="font-size:12px">ex:abusada@yamsafer.me</h1>
+                    </br>
+                    Country:
+                    <input type="text" ng-model="editedCountry" class="form-control input-sm chat-input" placeholder="Country" />
+                    </br>
+                    <div class="wrapper">
+                        <span class="group-btn">     
               <a class="btn btn-primary btn-md" ng-click="saveChanges(name, email, country)">Save Changes</a>
               <a class="btn btn-primary btn-md" ng-click="cancelUpdating()">Cancel</a>
             </span>
+                    </div>
+                </div>
             </div>
-            </div>
-        
+        </div>
+    </div>
+    <!-- End update modal -->
+    <div class="portlet-body">
+        <div>
+            <table class="table table-hover table-light">
+                <tr>
+                    <td ng-click="changeOrder('id')">Id</td>
+                    <td ng-click="changeOrder('name')">Name</td>
+                    <td ng-click="changeOrder('email')">Email</td>
+                    <td ng-click="changeOrder('country_code')">Country Code</td>
+                    <td ng-click="changeOrder('info')">Info</td>
+                    <td ng-click="changeOrder('phone')">Phone</td>
+                    <td ng-click="changeOrder('transactions.length')">Number of Transactions</td>
+                    <td ng-click="changeOrder('blocked')">Blocked</td>
+                    <td>Delete</td>
+                    <td>Update</td>
+                    <td>Block</td>
+                </tr>
+                <tr dir-paginate="item in customers | itemsPerPage: 10| filter:cust | orderBy : orderBy">
+                    <td><a ui-sref="singleCustomer({id:'{{item._id}}'})">{{item._id}}</a></td>
+                    <td>{{item.name}}</td>
+                    <td>{{item.email}}</td>
+                    <td>{{item.country_code}}</td>
+                    <td>{{item.info}}</td>
+                    <td>{{item.phone}}</td>
+                    <td>{{item.transactions.length}}</td>
+                    <td>{{item.blocked}}</td>
+                    <td>
+                        <a class="fa fa-times" ng-click="deleteCustomer(item._id)"></a>
+                    </td>
+                    <td>
+                        <a class="fa fa-pencil" ng-click="updateCustomer(item._id)"></a>
+                    </td>
+                    <td ng-if="item.blocked==true">
+                        <a style="color:red" class="fa fa-ban" color:red ng-click="blockCustomer(item,item._id , item.blocked)"></a>
+                    </td>
+                    <td ng-if="item.blocked==false">
+                        <a class="fa fa-ban" color:red ng-click="blockCustomer(item,item._id , item.blocked)"></a>
+                    </td>
+                </tr>
+            </table>
+            <dir-pagination-controls></dir-pagination-controls>
         </div>
     </div>
 </div>
-<!-- End update modal -->
-
-  <div class="portlet-body">
-                  
-          <div>  
-
-
-
- <table class="table table-hover table-light">
-                 
-  <tr>
-    <td ng-click="changeOrder('id')" >Id</td>
-    <td ng-click="changeOrder('name')">Name</td>
-    <td ng-click="changeOrder('email')">Email</td>
-    <td ng-click="changeOrder('country_code')">Country Code</td>
-    <td ng-click="changeOrder('info')">Info</td>
-    <td ng-click="changeOrder('phone')">Phone</td>
-    <td ng-click="changeOrder('transactions.length')">Number of Transactions</td>
-    <td ng-click="changeOrder('blocked')">Blocked</td>
-    <td>Delete</td>
-    <td>Update</td>
-    <td>Block</td>
-  </tr>
-  <tr dir-paginate="item in customers | itemsPerPage: 10| filter:cust | orderBy : orderBy">
-    <td><a ui-sref="singleCustomer({id:'{{item._id}}'})">{{item._id}}</a></td>
-    <td>{{item.name}}</td> 
-    <td>{{item.email}}</td>
-    <td>{{item.country_code}}</td> 
-    <td>{{item.info}}</td>
-    <td>{{item.phone}}</td> 
-    <td>{{item.transactions.length}}</td>
-    <td>{{item.blocked}}</td> 
-    <td><a class="fa fa-times" ng-click="deleteCustomer(item._id)"></a></td>     
-    <td><a class="fa fa-pencil" ng-click="updateCustomer(item._id)"></a></td>
-    <td ng-if="item.blocked==true"><a style="color:red" class="fa fa-ban" color:red ng-click="blockCustomer(item,item._id , item.blocked)"></a></td>
-    <td ng-if="item.blocked==false"><a class="fa fa-ban" color:red ng-click="blockCustomer(item,item._id , item.blocked)"></a></td>
-   
-  </tr>
-</table>
-<dir-pagination-controls></dir-pagination-controls>
-
- </div>
- </div>  
-</div>
-
-

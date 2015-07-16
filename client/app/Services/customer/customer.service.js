@@ -9,7 +9,7 @@ angular.module('internsApp')
 				var request = {};
 				var customersPromise = $http({
 					method: 'GET',
-					url: '/api/customers/',
+					url: 'http://192.168.0.117:9000/api/customers/',
 					data: request
 				});
 				return customersPromise;
@@ -20,7 +20,7 @@ angular.module('internsApp')
 				request.custId = custId;
 				var singleCustomerPromise = $http({
 					method: 'GET',
-					url: '/api/customers/',
+					url: 'http://192.168.0.117:9000/api/customers/',
 					data: request
 				});
 				return singleCustomerPromise;
@@ -40,7 +40,7 @@ angular.module('internsApp')
 
 				var updatedCustomerPromise = $http({
 					method: 'PATCH',
-					url: '/api/customers/' + custId,
+					url: 'http://192.168.0.117:9000/api/customers/' + custId,
 					data: request
 				});
 
@@ -57,7 +57,7 @@ angular.module('internsApp')
 				request.id = custId;
 				var deletedCustomerPromise = $http({
 					method: 'Delete',
-					url: '/api/customers/' + request.id,
+					url: 'http://192.168.0.117:9000/api/customers/' + request.id,
 					data: request
 
 				});
@@ -74,7 +74,7 @@ angular.module('internsApp')
 
 				var blockedCustomerPromise = $http({
 					method: 'POST',
-					url: '/api/customers/block/',
+					url: 'http://192.168.0.117:9000/api/customers/block/',
 					data: request
 
 				});

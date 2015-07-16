@@ -1,127 +1,142 @@
-
-
 <!doctype html>
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
 <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
 <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
-  <head>
+<!--[if gt IE 8]><!-->
+<html class="no-js">
+<!--<![endif]-->
+
+<head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <base href="/">
-    <title></title>
+    <title> Yamsafer CRM </title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width">
-
-    <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700&subset=all" rel="stylesheet" type="text/css"/>
-
-
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700&subset=all" rel="stylesheet" type="text/css" />
     <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
     <!-- build:css(client) app/vendor.css -->
-      <!-- bower:css -->
-      <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" />
-      <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.css" />
-      <link rel="stylesheet" href="bower_components/sweetalert/dist/sweetalert.css" />
-      <link rel="stylesheet" href="bower_components/simple-line-icons/css/simple-line-icons.css" />
-      <link rel="stylesheet" href="bower_components/angular-timeline/dist/angular-timeline.css" />
-      <link rel="stylesheet" href="bower_components/bootstrap-daterangepicker/daterangepicker-bs3.css" />
-      <!-- endbower -->
+    <!-- bower:css -->
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="bower_components/bootstrap-daterangepicker/daterangepicker-bs3.css" />
+    <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.css" />
+    <link rel="stylesheet" href="bower_components/sweetalert/dist/sweetalert.css" />
+    <link rel="stylesheet" href="bower_components/simple-line-icons/css/simple-line-icons.css" />
+    <link rel="stylesheet" href="bower_components/angular-timeline/dist/angular-timeline.css" />
+    <link rel="stylesheet" href="bower_components/leaflet/dist/leaflet.css" />
+    <!-- endbower -->
     <!-- endbuild -->
-
     <!-- build:css({.tmp,client}) app/app.css -->
-      <!-- injector:css -->
-      <link rel="stylesheet" href="app/app.css">
-      <link rel="stylesheet" href="app/content/content.css">
-      <link rel="stylesheet" href="app/customers/customers.css">
-      <link rel="stylesheet" href="app/findByUDIDCtrl/findByUDIDCtrl.css">
-      <link rel="stylesheet" href="app/singleCustomer/singleCustomer.css">
-      <link rel="stylesheet" href="components/modal/modal.css">
-      <link rel="stylesheet" href="components/theme-styles/components-md.css">
-      <link rel="stylesheet" href="components/theme-styles/custom.css">
-      <link rel="stylesheet" href="components/theme-styles/layout.css">
-      <link rel="stylesheet" href="components/theme-styles/plugins-md.css">
-      <!-- endinjector -->
+    <!-- injector:css -->
+    <link rel="stylesheet" href="app/app.css">
+    <link rel="stylesheet" href="app/content/content.css">
+    <link rel="stylesheet" href="app/customers/customers.css">
+    <link rel="stylesheet" href="app/findByUDIDCtrl/findByUDIDCtrl.css">
+    <link rel="stylesheet" href="app/page-head/page-head.css">
+    <link rel="stylesheet" href="app/singleCustomer/singleCustomer.css">
+    <link rel="stylesheet" href="app/timeline/timeline.css">
+    <link rel="stylesheet" href="components/dateRangePicker/dateRangePicker.css">
+    <link rel="stylesheet" href="components/footer/footer.css">
+    <link rel="stylesheet" href="components/modal/modal.css">
+    <link rel="stylesheet" href="components/profile/profile.css">
+    <link rel="stylesheet" href="components/theme-styles/components-md.css">
+    <link rel="stylesheet" href="components/theme-styles/components-rounded.css">
+    <link rel="stylesheet" href="components/theme-styles/custom.css">
+    <link rel="stylesheet" href="components/theme-styles/font-awesome.min.css">
+    <link rel="stylesheet" href="components/theme-styles/font-awesome/css/font-awesome.css">
+    <link rel="stylesheet" href="components/theme-styles/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="components/theme-styles/horizontal-timeline.css">
+    <link rel="stylesheet" href="components/theme-styles/layout.css">
+    <link rel="stylesheet" href="components/theme-styles/plugins-md.css">
+    <link rel="stylesheet" href="components/theme-styles/profile.css">
+    <link rel="stylesheet" href="components/theme-styles/profile1.css">
+    <link rel="stylesheet" href="components/theme-styles/spinner.css">
+    <link rel="stylesheet" href="components/theme-styles/timeline-old.css">
+    <link rel="stylesheet" href="components/theme-styles/timeline.css">
+    <!-- endinjector -->
     <!-- endbuild -->
-  </head>
-  <body ng-app="internsApp" class="page-header-fixed page-quick-sidebar-over-content">
+</head>
+
+<body ng-app="internsApp" class="page-header-fixed page-quick-sidebar-over-content">
     <!--[if lt IE 7]>
       <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
     <![endif]-->
-    
     <div class="wrapper">
-      <div ng-include="'components/navbar/navbar.html'" ></div>    
-      <!-- Add your site or application content here -->
-
-  
-
-       <div class="container-fluid"  >
-
-      <div class="page-content">
-
-          <div ui-view=""></div>  
-   
-       </div>
+        <!-- Navbar -->
+        <div ng-include="'components/navbar/navbar.html'"></div>
+        <!-- Main content -->
+        <div class="container-fluid">
+            <div class="page-content">
+                <div ui-view=""></div>
+            </div>
+        </div>
+        <!-- Page Footer -->
+        <div data-ng-include="'components/footer/footer.html'" class="page-footer"></div>
     </div>
-
-    <div data-ng-include="'components/footer/footer.html'"  class="page-footer">
-  </div>
-    
-    </div>
-
-
     <!--[if lt IE 9]>
     <script src="bower_components/es5-shim/es5-shim.js"></script>
     <script src="bower_components/json3/lib/json3.min.js"></script>
     <![endif]-->
-
-            <script src="https://cdn.socket.io/socket.io-1.3.5.js"></script>
-
+    <script src="https://cdn.socket.io/socket.io-1.3.5.js"></script>
     <!-- build:js({client,node_modules}) app/vendor.js -->
-      <!-- bower:js -->
-      <script src="bower_components/jquery/dist/jquery.js"></script>
-      <script src="bower_components/angular/angular.js"></script>
-      <script src="bower_components/angular-resource/angular-resource.js"></script>
-      <script src="bower_components/angular-cookies/angular-cookies.js"></script>
-      <script src="bower_components/angular-sanitize/angular-sanitize.js"></script>
-      <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
-      <script src="bower_components/lodash/dist/lodash.compat.js"></script>
-      <script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
-      <script src="bower_components/sweetalert/dist/sweetalert.min.js"></script>
-      <script src="bower_components/jquery-dist/jquery.min.js"></script>
-      <script src="bower_components/angular-utils-pagination/dirPagination.js"></script>
-      <script src="bower_components/angular-smart-table/dist/smart-table.js"></script>
-      <script src="bower_components/oclazyload/dist/ocLazyLoad.js"></script>
-      <script src="bower_components/d3/d3.js"></script>
-      <script src="bower_components/angular-charts/dist/angular-charts.js"></script>
-      <script src="bower_components/angular-timeline/dist/angular-timeline.js"></script>
-      <script src="bower_components/moment/moment.js"></script>
-      <script src="bower_components/bootstrap-daterangepicker/daterangepicker.js"></script>
-      <script src="bower_components/angular-daterangepicker/js/angular-daterangepicker.js"></script>
-      <!-- endbower -->
+    <!-- bower:js -->
+    <script src="bower_components/jquery/dist/jquery.js"></script>
+    <script src="bower_components/angular/angular.js"></script>
+    <script src="bower_components/angular-resource/angular-resource.js"></script>
+    <script src="bower_components/angular-cookies/angular-cookies.js"></script>
+    <script src="bower_components/angular-sanitize/angular-sanitize.js"></script>
+    <script src="bower_components/moment/moment.js"></script>
+    <script src="bower_components/bootstrap-daterangepicker/daterangepicker.js"></script>
+    <script src="bower_components/angular-daterangepicker/js/angular-daterangepicker.js"></script>
+    <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+    <script src="bower_components/lodash/dist/lodash.compat.js"></script>
+    <script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
+    <script src="bower_components/sweetalert/dist/sweetalert.min.js"></script>
+    <script src="bower_components/jquery-dist/jquery.min.js"></script>
+    <script src="bower_components/angular-utils-pagination/dirPagination.js"></script>
+    <script src="bower_components/angular-smart-table/dist/smart-table.js"></script>
+    <script src="bower_components/oclazyload/dist/ocLazyLoad.js"></script>
+    <script src="bower_components/d3/d3.js"></script>
+    <script src="bower_components/angular-charts/dist/angular-charts.js"></script>
+    <script src="bower_components/angular-timeline/dist/angular-timeline.js"></script>
+    <script src="bower_components/leaflet/dist/leaflet.js"></script>
+    <script src="bower_components/leaflet/dist/leaflet-src.js"></script>
+    <script src="bower_components/angular-leaflet-directive/dist/angular-leaflet-directive.js"></script>
+    <script src="bower_components/ngInfiniteScroll/build/ng-infinite-scroll.js"></script>
+    <!-- endbower -->
     <!-- endbuild -->
-  
-        <!-- build:js({.tmp,client}) app/app.js -->
-        <script src="app/app.js"></script>
-          <!-- injector:js -->
-          <script src="app/Services/Services.service.js"></script>
-          <script src="app/Services/customer/customer.service.js"></script>
-          <script src="app/Services/mixPanelService/mixPanelService.service.js"></script>
-          <script src="app/content/content.controller.js"></script>
-          <script src="app/content/content.js"></script>
-          <script src="app/customers/customers.controller.js"></script>
-          <script src="app/customers/customers.js"></script>
-          <script src="app/findByUDIDCtrl/findByUDIDCtrl.controller.js"></script>
-          <script src="app/findByUDIDCtrl/findByUDIDCtrl.js"></script>
-          <script src="app/singleCustomer/singleCustomer.controller.js"></script>
-          <script src="app/singleCustomer/singleCustomer.js"></script>
-          <script src="components/modal/modal.service.js"></script>
-          <script src="components/navbar/navbar.controller.js"></script>
-          <!-- endinjector -->
-        <!-- endbuild -->
-
-
-
-         <!-- BEGIN FOOTER -->
-  
+    <!-- build:js({.tmp,client}) app/app.js -->
+    <script src="app/app.js"></script>
+    <!-- injector:js -->
+    <script src="app/Services/Services.service.js"></script>
+    <script src="app/Services/customer/customer.service.js"></script>
+    <script src="app/Services/mixPanelService/mixPanelService.service.js"></script>
+    <script src="app/Services/singleCustomer/singleCustomer.service.js"></script>
+    <script src="app/Services/timeline/timeline.service.js"></script>
+    <script src="app/content/content.controller.js"></script>
+    <script src="app/content/content.js"></script>
+    <script src="app/customers/customers.controller.js"></script>
+    <script src="app/customers/customers.js"></script>
+    <script src="app/findByUDIDCtrl/findByUDIDCtrl.controller.js"></script>
+    <script src="app/findByUDIDCtrl/findByUDIDCtrl.js"></script>
+    <script src="app/page-head/page-head.controller.js"></script>
+    <script src="app/page-head/page-head.js"></script>
+    <script src="app/singleCustomer/singleCustomer.controller.js"></script>
+    <script src="app/singleCustomer/singleCustomer.js"></script>
+    <script src="app/timeline/timeline.controller.js"></script>
+    <script src="app/timeline/timeline.js"></script>
+    <script src="components/dateRangePicker/dateRangePicker.controller.js"></script>
+    <script src="components/dateRangePicker/dateRangePicker.js"></script>
+    <script src="components/footer/footer.controller.js"></script>
+    <script src="components/footer/footer.js"></script>
+    <script src="components/modal/modal.service.js"></script>
+    <script src="components/navbar/navbar.controller.js"></script>
+    <script src="components/profile/profile.controller.js"></script>
+    <script src="components/profile/profile.js"></script>
+    <script src="components/theme-styles/jquery.min.js"></script>
+    <!-- endinjector -->
+    <!-- endbuild -->
+    <!-- BEGIN FOOTER -->
 </body>
+
 </html>

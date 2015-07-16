@@ -1,373 +1,298 @@
-<!-- <center>
 
-            <button class="center-block btn btn-inverse" ng-click="loadMoreCustomerLogs()">Load More..</button>
- -->
-            <!-- <div class="container"> -->
-                <!-- <div class="spinner"></div> -->
-<!--                 <div ng-show="show" class="spinner border"></div> -->
-                <!-- <div class="spinner arrow"><div class="arrow1"></div><div class="arrow2"></div></div> -->
-          <!--   </div>
-        </center> -->
-
-
-        <div class="row">
-				<div class="col-md-12">
-					<!-- BEGIN PROFILE SIDEBAR -->
-					<div class="profile-sidebar" style="width: 250px;">
-						<!-- PORTLET MAIN -->
-						<div class="portlet light profile-sidebar-portlet">
-							<!-- SIDEBAR USERPIC -->
-							<div class="profile-userpic">
-								<img src="http://www.localcrimenews.com/wp-content/uploads/2013/07/default-user-icon-profile.png" class="img-responsive" alt="">
-								
-							</div>
-							<!-- END SIDEBAR USERPIC -->
-							<!-- SIDEBAR USER TITLE -->
-							<div class="profile-usertitle">
-								<div class="profile-usertitle-name">
-									 {{customerData.name}}
-								</div>
-								<div class="profile-usertitle-job">
-									 {{customerData.country_code}}
-								</div>
-							</div>
-							<!-- END SIDEBAR USER TITLE -->
-							<!-- SIDEBAR BUTTONS -->
-							<div class="profile-userbuttons">
-								<button type="button" class="btn btn-circle green-haze btn-sm" ng-click="blockCustomer(customerData, customerData.blocked)" ng-show="block">Unblock</button>
-								<button type="button" class="btn btn-circle green-haze btn-sm" ng-click="blockCustomer(customerData, customerData.blocked)" ng-hide="block">Block</button>
-								<button type="button" class="btn btn-circle btn-danger btn-sm" ng-click="deleteCustomer()">Delete</button>
-							</div>
-							<!-- END SIDEBAR BUTTONS -->
-							<!-- SIDEBAR MENU -->
-							<div class="profile-usermenu">
-								<ul class="nav">
-									<li class="active">
-										<a href="extra_profile.html">
-										<!-- <i class="fa fa-phone"></i> -->
-										Call logs </a>
-									</li>
-									<li>
-										<a href="extra_profile_account.html">
-										<!-- <i class="icon-settings"></i> -->
-										Transactions </a>
-									</li>
-								</ul>
-							</div>
-							<!-- END MENU -->
-						</div>
-						<!-- END PORTLET MAIN -->
-						<!-- PORTLET MAIN -->
-						<div class="portlet light">
-							<!-- STAT -->
-							<div class="row list-separated profile-stat">
-								
-								
-								<div class="col-md-6 col-sm-6 col-xs-8">
-									<div class="uppercase profile-stat-title">
-										 {{nocallLogs}}
-									</div>
-									<div class="uppercase profile-stat-text">
-										 Call logs
-									</div>
-								</div>
-
-								<div class="col-md-5 col-sm-5 col-xs-7">
-									<div class="uppercase profile-stat-title">
-										 {{noTransactions}}
-									</div>
-									<div class="uppercase profile-stat-text">
-										 Transactions
-									</div>
-								</div>
-							</div>
-							<!-- END STAT -->
-							<div>
-								<h4 class="profile-desc-title">About {{customerData.name}}</h4>
-								<div class="margin-top-20 profile-desc-link">
-									<i class="fa fa-ban"></i>
-									{{blocked}}
-								</div>
-								<div class="margin-top-20 profile-desc-link">
-									<i class="fa fa-info-circle"></i>
-									{{customerData.info}}
-								</div>
-								<div class="margin-top-20 profile-desc-link">
-									<i class="fa fa-envelope-o"></i>
-									{{customerData.email}}
-								</div>
-								<div class="margin-top-20 profile-desc-link">
-									<i class="fa fa-mobile"></i>
-									{{customerData.phone}}
-								</div>
-								
-								
-							</div>
-						</div>
-						<!-- END PORTLET MAIN -->
-					</div>
-					<!-- END BEGIN PROFILE SIDEBAR -->
-
-
-
-					<!-- BEGIN PROFILE CONTENT -->
-					<div class="profile-content">
-						<div class="row">
-							<div class="col-md-12">
-								<!-- BEGIN PORTLET -->
-								<div class="portlet light ">
-									<div class="portlet-title">
-										<div class="caption caption-md">
-											<i class="icon-bar-chart theme-font hide"></i>
-											<span class="caption-subject font-blue-madison bold uppercase">Your Activity</span>
-											<span class="caption-helper hide">weekly stats...</span>
-										</div>
-										<div class="actions">
-											<div class="btn-group btn-group-devided" data-toggle="buttons">
-												<label class="btn btn-transparent grey-salsa btn-circle btn-sm active">
-												<input type="radio" name="options" class="toggle" id="option1">Today</label>
-												<label class="btn btn-transparent grey-salsa btn-circle btn-sm">
-												<input type="radio" name="options" class="toggle" id="option2">Week</label>
-												<label class="btn btn-transparent grey-salsa btn-circle btn-sm">
-												<input type="radio" name="options" class="toggle" id="option2">Month</label>
-											</div>
-										</div>
-									</div>
-									<div class="portlet-body">
-										<div class="row number-stats margin-bottom-30">
-											<div class="col-md-6 col-sm-6 col-xs-6">
-												<div class="stat-left">
-													<div class="stat-chart">
-														<!-- do not line break "sparkline_bar" div. sparkline chart has an issue when the container div has line break -->
-														<div id="sparkline_bar"></div>
-													</div>
-													<div class="stat-number">
-														<div class="title">
-															 Total
-														</div>
-														<div class="number">
-															 246
-														</div>
-													</div>
-												</div>
-											</div>
-											<div class="col-md-6 col-sm-6 col-xs-6">
-												<div class="stat-right">
-													<div class="stat-chart">
-														<!-- do not line break "sparkline_bar" div. sparkline chart has an issue when the container div has line break -->
-														<div id="sparkline_bar2"></div>
-													</div>
-													<div class="stat-number">
-														<div class="title">
-															 New
-														</div>
-														<div class="number">
-															 719
-														</div>
-													</div>
-												</div>
-											</div>
-										</div>
-										<div class="table-scrollable table-scrollable-borderless">
-											<table class="table table-hover table-light">
-											<thead>
-											<tr class="uppercase">
-												<th colspan="2">
-													 MEMBER
-												</th>
-												<th>
-													 Earnings
-												</th>
-												<th>
-													 CASES
-												</th>
-												<th>
-													 CLOSED
-												</th>
-												<th>
-													 RATE
-												</th>
-											</tr>
-											</thead>
-											<tr>
-												<td class="fit">
-													<img class="user-pic" src="assets/images/yeoman.png">
-												</td>
-												<td>
-													<a href="javascript:;" class="primary-link">Brain</a>
-												</td>
-												<td>
-													 $345
-												</td>
-												<td>
-													 45
-												</td>
-												<td>
-													 124
-												</td>
-												<td>
-													<span class="bold theme-font">80%</span>
-												</td>
-											</tr>
-											<tr>
-												<td class="fit">
-													<img class="user-pic" src="assets/images/yeoman.png">
-												</td>
-												<td>
-													<a href="javascript:;" class="primary-link">Nick</a>
-												</td>
-												<td>
-													 $560
-												</td>
-												<td>
-													 12
-												</td>
-												<td>
-													 24
-												</td>
-												<td>
-													<span class="bold theme-font">67%</span>
-												</td>
-											</tr>
-											<tr>
-												<td class="fit">
-													<img class="user-pic" src="assets/images/yeoman.png">
-												</td>
-												<td>
-													<a href="javascript:;" class="primary-link">Tim</a>
-												</td>
-												<td>
-													 $1,345
-												</td>
-												<td>
-													 450
-												</td>
-												<td>
-													 46
-												</td>
-												<td>
-													<span class="bold theme-font">98%</span>
-												</td>
-											</tr>
-											<tr>
-												<td class="fit">
-													<img class="user-pic" src="assets/images/yeoman.png">
-												</td>
-												<td>
-													<a href="javascript:;" class="primary-link">Tom</a>
-												</td>
-												<td>
-													 $645
-												</td>
-												<td>
-													 50
-												</td>
-												<td>
-													 89
-												</td>
-												<td>
-													<span class="bold theme-font">58%</span>
-												</td>
-											</tr>
-											</table>
-										</div>
-									</div>
-								</div>
-								<!-- END PORTLET -->
-							</div>
-							<div class="col-md-12">
-								<!-- BEGIN PORTLET -->
-								<div class="portlet light">
-									<div class="portlet-title tabbable-line">
-										<div class="caption caption-md">
-											<i class="icon-globe theme-font hide"></i>
-											<span class="caption-subject font-blue-madison bold uppercase">Feeds</span>
-										</div>
-										<ul class="nav nav-tabs">
-											<li class="active">
-												<a href="#tab_1_1" data-toggle="tab">
-												System </a>
-											</li>
-											<li>
-												<a href="#tab_1_2" data-toggle="tab">
-												Activities </a>
-											</li>
-										</ul>
-									</div>
-									<div class="portlet-body">
-										<!--BEGIN TABS-->
-
-
-
-
-
-
-
-										<!-- <div class="container"> -->
-  <div class="row">
-    <div class="col-lg-12">
-      <h3 class="text-center">{{customerData.name}}'s Call logs</h3>
-      
-      <ul class="htimeline" ng-repeat="call in date track by $index" >
-        <li ng-class-even="'htimeline-inverted'">
-          <div class="htimeline-image">
-            <img class="img-circle img-responsive" alt="">{{call.time}}
-          </div>
-          <div class="htimeline-panel">
-            <div class="htimeline-heading">
-              <h4>{{call.date}}</h4>
-              
+<script src="components/theme-styles/jquery.min.js"></script>
+<div class="row">
+    <div class="col-md-12">
+        <!-- BEGIN PROFILE SIDEBAR -->
+        <div class="profile-sidebar" style="width: 250px; ">
+            <!-- PORTLET MAIN -->
+            <div class="portlet light profile-sidebar-portlet" style="height: 570px;">
+                <!-- SIDEBAR USERPIC -->
+                <div class="profile-userpic">
+                    <img src="http://www.localcrimenews.com/wp-content/uploads/2013/07/default-user-icon-profile.png" class="img-responsive" alt="">
+                    <br>
+                </div>
+                <!-- END SIDEBAR USERPIC -->
+                <!-- SIDEBAR USER TITLE -->
+                <div class="profile-usertitle">
+                    <div class="profile-usertitle-name">
+                        {{customerData.name}}
+                        <br>
+                    </div>
+                    <div class="profile-usertitle-job">
+                        {{customerData.country_code}}
+                        <br>
+                    </div>
+                    <div class="profile-usertitle-job">
+                        {{customerData.region}}
+                        <br>
+                    </div>
+                </div>
+                <!-- END SIDEBAR USER TITLE -->
+                <!-- SIDEBAR BUTTONS -->
+                <div class="profile-userbuttons">
+                    <button type="button" class="btn btn-circle green-haze btn-sm" ng-click="blockCustomer(customerData, customerData.blocked)" ng-show="block">Unblock
+                        <br>
+                    </button>
+                    <button type="button" class="btn btn-circle green-haze btn-sm" ng-click="blockCustomer(customerData, customerData.blocked)" ng-hide="block">Block
+                        <br>
+                    </button>
+                    <button type="button" class="btn btn-circle btn-danger btn-sm" ng-click="deleteCustomer()">Delete</button>
+                </div>
+                <!-- END SIDEBAR BUTTONS -->
+                <!-- SIDEBAR MENU -->
+                <div class="profile-usermenu">
+                    <ul class="nav">
+                        <li class="active">
+                            <a href="extra_profile.html">
+                                <!-- <i class="fa fa-phone"></i> -->
+                                Call logs
+                                <br>
+                                <br>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="extra_profile_account.html">
+                                <!-- <i class="icon-settings"></i> -->
+                                Transactions </a>
+                        </li>
+                    </ul>
+                </div>
+                <!-- END MENU -->
             </div>
-           
-          </div>
-          <div class="line"></div>
-        </li>
-        <li class="htimeline-inverted">
-          <div class="htimeline-image">
-            <img class="img-circle img-responsive"  alt="">
-          </div>
-          
-          <div class="line"></div>
-        </li>
-        <li>
-          <div class="htimeline-image">
-            <img class="img-circle img-responsive" alt="">
-          </div>
-                   <div class="line"></div>
-        </li>
-      
-     
-      </ul>
-    </div>
-  </div>
-</div>
-										
-
-
-
-										<!--END TABS-->
-									</div>
-								</div>
-								<!-- END PORTLET -->
-							</div>
-						</div>
-						
-							
-						</div>
-					</div>
-					<!-- END PROFILE CONTENT -->
-                
-					
-				</div>
-			</div>
-			<!-- END PAGE CONTENT-->
-
-
-
-
-
-
-
-
-
-			
+            <!-- END PORTLET MAIN -->
+            <!-- PORTLET MAIN -->
+            <div class="portlet light" style="height: 420px;">
+                <!-- STAT -->
+                <div class="row list-separated profile-stat">
+                    <div class="col-md-6 col-sm-6 col-xs-8">
+                        <div class="uppercase profile-stat-title">
+                            {{nocallLogs}}
+                        </div>
+                        <div class="uppercase profile-stat-text">
+                            Call logs
+                        </div>
+                    </div>
+                    <div class="col-md-5 col-sm-5 col-xs-7">
+                        <div class="uppercase profile-stat-title">
+                            {{noTransactions}}
+                        </div>
+                        <div class="uppercase profile-stat-text">
+                            Transactions
+                        </div>
+                    </div>
+                </div>
+                <!-- END STAT -->
+                <div>
+                    <h4 class="profile-desc-title"> <br>About {{customerData.name}}<br><br></h4>
+                    <div class="margin-top-20 profile-desc-link">
+                        <i class="fa fa-ban"></i> {{blocked}}
+                        <br>
+                        <br>
+                    </div>
+                    <div class="margin-top-20 profile-desc-link">
+                        <i class="fa fa-info-circle"></i> {{customerData.info}}
+                        <br>
+                        <br>
+                    </div>
+                    <div class="margin-top-20 profile-desc-link">
+                        <i class="fa fa-envelope-o"></i> {{customerData.email}}
+                        <br>
+                        <br>
+                    </div>
+                    <div class="margin-top-20 profile-desc-link">
+                        <i class="fa fa-mobile"></i> {{customerData.phone}}
+                    </div>
+                    <br>
+                </div>
+            </div>
+            <!-- END PORTLET MAIN -->
+        </div>
+        <!-- END BEGIN PROFILE SIDEBAR -->
+        <!-- BEGIN PROFILE CONTENT -->
+        <div class="profile-content">
+            <div class="col-md-12">
+                <!-- BEGIN PORTLET -->
+                <div class="portlet light" >
+                    <div class="portlet-title tabbable-line">
+                        <div class="caption caption-md">
+                            <i class="icon-globe theme-font hide"></i>
+                            <span class="caption-subject font-blue-madison bold uppercase">Map</span>
+                        </div>
+                    </div>
+                    <div class="portlet-body" style="position:relative; height:480px">
+                        <!--BEGIN TABS-->
+                        <leaflet markers="city" center="center" style=" position:absolute; height:100%; width:100%;"></leaflet>
+                    </div>
+                </div>
+            </div>
+                <!-- END PROFILE CONTENT -->
+                <div class="row ng-scope">
+                    <div class="col-sm-12 col-md-9" >
+                        <!-- BEGIN PORTLET -->
+                        <div class="portlet light" >
+                            <div class="portlet-title tabbable-line">
+                                <div class="caption caption-md">
+                                    <i class="icon-globe theme-font hide"></i>
+                                    <span class="caption-subject font-blue-madison bold uppercase">Transactions</span>
+                                </div>
+                                <ul class="nav nav-tabs">
+                                    <li class="active">
+                                        <a href="#" data-target="#tab_1_1" data-toggle="tab">
+						                   Total 
+						                </a>
+                                    </li>
+                                    <li>
+                                        <a href="#" data-target="#tab_1_2" data-toggle="tab">
+						                    {{noTransactions}} 
+						                </a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="actions">
+                                <div class="stat-number">
+                                    <div class="actions">
+                                        <div class="btn-group btn-group-devided" data-toggle="buttons">
+                                            <label class="btn btn-transparent grey-salsa btn-circle btn-sm active">
+                                                <input type="radio" ng-click="getAllTransactions()" name="options" class="toggle" id="option1">All</label>
+                                            <label class="btn btn-transparent grey-salsa btn-circle btn-sm ">
+                                                <input type="radio" ng-click="getDoneTransactions()" name="options" class="toggle" id="option1">Consumed</label>
+                                            <label class="btn btn-transparent grey-salsa btn-circle btn-sm">
+                                                <input type="radio" ng-click="getCancelledTransactions()" name="options" class="toggle" id="option2">Cancelled</label>
+                                            <label class="btn btn-transparent grey-salsa btn-circle btn-sm">
+                                                <input type="radio" ng-click="getNoShowTransactions()" name="options" class="toggle" id="option2">No show</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="portlet-body">
+                                <div class="row number-stats margin-bottom-30">
+                                    <div class="col-md-6 col-sm-6 col-xs-6" >
+                                        <div class="stat-left">
+                                            <div class="stat-chart">
+                                                <!-- do not line break "sparkline_bar" div. sparkline chart has an issue when the container div has line break -->
+                                                <div id="sparkline_bar"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div infinite-scroll="myPagingFunction()" infinite-scroll-distance="3">
+                                        <div class="col-md-6 col-sm-6 col-xs-6">
+                                            <div class="stat-right">
+                                                <div class="stat-chart">
+                                                    <!-- do not line break "sparkline_bar" div. sparkline chart has an issue when the container div has line break -->
+                                                    <div id="sparkline_bar2"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="table-scrollable table-scrollable-borderless">
+                                        <table class="table table-hover table-light" >
+                                            <thead>
+                                                <tr class="uppercase">
+                                                    <td>
+                                                        Amount
+                                                    </td>
+                                                    <td>
+                                                        Chekin Date
+                                                    </td>
+                                                    <td>
+                                                        Chekout Date
+                                                    </td>
+                                                    <td>
+                                                        Hotel
+                                                    </td>
+                                                    <td>
+                                                        Status
+                                                    </td>
+                                                </tr>
+                                            </thead>
+                                            <tr ng-repeat="transaction in transactions">
+                                                <!-- <td class="fit">
+													<img class="user-pic" src="assets/images/yeoman.png">
+												</td> -->
+                                                <!-- <td>
+													<a href="javascript:;" class="primary-link">Brain</a>
+												</td> -->
+                                                <td>
+                                                    ${{transaction.amount}}
+                                                </td>
+                                                <td>
+                                                    {{transaction.checkin_date | date: 'mediumDate'}}
+                                                </td>
+                                                <td>
+                                                    {{transaction.checkout_date | date: 'mediumDate'}}
+                                                </td>
+                                                <td>
+                                                    {{transaction.Hotel}}
+                                                </td>
+                                                <td>
+                                                    {{transaction.status}}
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- END PORTLET -->
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-3 row-sm-12 row-md-3">
+                        <!-- BEGIN PORTLET -->
+                        <div class="portlet light">
+                            <div class="portlet-title tabbable-line">
+                                <div class="caption caption-md">
+                                    <i class="icon-globe theme-font hide"></i>
+                                    <span class="caption-subject font-blue-madison bold uppercase">Call Logs</span>
+                                </div>
+                                <ul class="nav nav-tabs">
+                                    <li class="active">
+                                        <a href="#" data-target="#tab_1_1" data-toggle="tab">
+						                   Total 
+						                </a>
+                                    </li>
+                                    <li>
+                                        <a href="#" data-target="#tab_1_2" data-toggle="tab">
+						                    {{nocallLogs}} 
+						                </a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="portlet-body">
+                                <!--BEGIN TABS-->
+                                <div class="tab-content">
+                                    <div class="tab-pane active" id="tab_1_1">
+                                        <div class="scroller" style="height: 340px;" data-always-visible="1" data-rail-visible1="0" data-handle-color="#D7DCE2">
+                                            <ul class="feeds" ng-repeat="call in callLogs">
+                                                <li>
+                                                    <div class="col1">
+                                                        <div class="cont">
+                                                            <div class="cont-col1">
+                                                                <div class="label label-sm label-danger">
+                                                                    <i class="fa fa-clock-o"></i>
+                                                                </div>
+                                                            </div>
+                                                            <div class="cont-col2">
+                                                                <div class="desc">
+                                                                    {{call.date| date: 'mediumDate'}}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col2">
+                                                        <div class="date">
+                                                            {{call.date| date: 'mediumTime'}}
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--END TABS-->
+                            </div>
+                        </div>
+                        <!-- END PORTLET -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- END PAGE CONTENT-->

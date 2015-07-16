@@ -50,13 +50,11 @@ exports.searchByDate = function(req, res) {
 
 };
 
-
-
 exports.searchByName = function(req, res) {
 
     // Filter to find by
-    var filter = new RegExp(req.params.id, "i");
-
+    var filter = new RegExp(req.params.id, 'i');
+    console.log(filter);
     // Mongoose query
     var query = {
         $or: [{
@@ -97,9 +95,7 @@ exports.searchByName = function(req, res) {
         }
     };
 
-
     Customer.find(query, onQuerySuccess);
-
 
     var startFunctionOfTenQueries = function(arrayOfCustomerID) {
             var allTenResultOfTimeLine = [];
@@ -118,14 +114,12 @@ exports.searchByName = function(req, res) {
             uploader(0);
 
         }
-        //send response back to requested url
+    //send response back to requested url
     var tenQueries = function(allTenResult) {
         return res.json(allTenResult);
     }
 
-
 };
-
 
 // Creates a new callLog in the DB.
 exports.create = function(req, res) {
@@ -257,7 +251,6 @@ var findOneCallLogByID = function(IdSent, callback) {
                         }
                     }
 
-
                     returnResultNow();
                 })
         });
@@ -294,7 +287,7 @@ exports.timeline = function(req, res) {
                     r.push(k);
                 return r;
             }
-            //array with no duplicates
+        //array with no duplicates
         var uniqueArrOfCust = ArrNoDupe(arrOfCust);
 
         startFunctionOfTenQueries(uniqueArrOfCust);
@@ -318,7 +311,7 @@ exports.timeline = function(req, res) {
             uploader(0);
 
         }
-        //send response back to requested url
+    //send response back to requested url
     var tenQueries = function(allTenResult) {
         return res.json(allTenResult);
     }
@@ -407,7 +400,6 @@ exports.sendBackLastCallLog = function(IdSent, callback) {
                             android_os_version: callLogForPopulate.customer.user_android.android_os_version
                         }
                     }
-
 
                     returnResultNow();
                 })
