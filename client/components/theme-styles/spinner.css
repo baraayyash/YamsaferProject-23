@@ -1,0 +1,115 @@
+@import url(http://fonts.googleapis.com/css?family=Open+Sans);
+body{
+    background:#2F373E;
+}
+.container{
+    width:330px;
+    margin:10px auto
+}
+.spinner, .border{
+    border-top: 50px solid #0A5BC4;
+    border-left: 50px solid #00A600;
+    border-right: 50px solid #DC572E;
+    border-bottom: 50px solid #BF1E4B;
+    height:0;
+    width:0;
+    border-radius: 50px;
+    -webkit-animation: spin 1s infinite linear;
+    -moz-animation: spin 1s infinite linear;
+    animation: spin 1s infinite linear;
+    margin-right:10px;/*Just 4 spacing*/
+    display:inline-block;/*Can also be removed*/
+}
+.spinner:last-child{
+    margin:0;
+}
+.border{
+    border-top: 10px solid #0A5BC4;
+    border-left: 10px solid #00A600;
+    border-right: 10px solid #DC572E;
+    border-bottom: 10px solid #BF1E4B;
+    height:80px;
+    width:80px;
+    -webkit-animation-name: spinback;
+    -webkit-animation-duration: .5s;
+    -moz-animation-name: spinback;
+    -moz-animation-duration: .5s;
+    animation-name: spinback;
+    animation-duration: .5s;
+    animation-name: spinback;
+    animation-duration: .5s;
+}
+.arrow{
+    -webkit-animation-duration: 6s;
+    -moz-animation-duration: 6s;
+    animation-duration: 6s;
+    animation-duration: 6s;
+    height:80px;
+    width:80px;
+    border:10px solid black;
+    border-top: 10px solid transparent;
+    position:relative;
+
+}
+.arrow1{
+    width: 0;
+    height: 0;
+    border-top: 7px solid black;
+    border-left: 7px solid transparent;
+    position:absolute;
+    top:5px;
+    left:4px;
+}
+.arrow2{
+    width: 0;
+    height: 0;
+    border-bottom: 7px solid white;
+    border-left: 7px solid transparent;
+    position:absolute;
+    top:4px;
+    left:68px;
+}
+@keyframes spin{
+    100%{
+
+        -webkit-transform:rotate(360deg);
+        transform:rotate(360deg);
+    }
+}
+@keyframes spinback{
+    100%{
+
+        -webkit-transform:rotate(-360deg);
+        transform:rotate(-360deg);
+    }
+}
+@-webkit-keyframes spin{
+    100%{
+
+        -webkit-transform:rotate(360deg);
+        transform:rotate(360deg);
+    }
+}
+@-webkit-keyframes spinback{
+    100%{
+
+        -webkit-transform:rotate(-360deg);
+        transform:rotate(-360deg);
+    }
+}
+@-moz-keyframes spin{
+    100%{
+
+        -webkit-transform:rotate(360deg);
+        transform:rotate(360deg);
+    }
+}
+@-moz-keyframes spinback{
+    100%{
+
+        -webkit-transform:rotate(-360deg);
+        transform:rotate(-360deg);
+    }
+}
+/* Can be removed */
+

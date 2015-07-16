@@ -1,0 +1,117 @@
+<div class="portlet light">
+    <br>
+    <br>
+    <div class="col-lg-3">
+        <div class="input-group">
+            <input type="text" class="form-control" placeholder="Search..." ng-model="search">
+            <span class="input-group-btn">
+                <button class="btn btn-default" type="button" ng-click="searchLogs(search)">
+                <!-- <button class="btn btn-default" type="button"> -->
+                    <i class="fa fa-search"></i>
+                </button>
+            </span>
+        </div>
+        <!-- /input-group -->
+    </div>
+    <!-- /.col-lg-3 -->
+    <!-- <ng-include src="'components/dateRangePicker/dateRangePicker.html'" ></ng-include>   -->
+    <div>
+        <div class="col-lg-2" style="margin-left:850px">
+            <input date-range-picker class="form-control date-picker" type="text" placeholder="Date range" ng-model="date" />
+        </div>
+        <!-- /.col-lg-2 -->
+        <button style="margin-left:-150px" ng-click="searchByDate()"><i class="fa fa-search"></i></button>
+    </div>
+    <br>
+    <br>
+    <br>
+    <br>
+    <div class="portlet-body">
+        <div class="row">
+            <div class="col-md-12">
+                <ul class="timeline">
+                    <li ng-repeat="log in logs" class="timeline-yellow">
+                        <div class="timeline-time">
+                            <span class="date">
+
+                                {{log.date| date: 'mediumDate'}} 
+                            </span>
+                            <span class="time">
+                                {{log.date| date: 'mediumTime'}} 
+                            </span>
+                        </div>
+                        <div class="timeline-icon">
+                            <i class="fa fa-clock-o"></i>
+                        </div>
+                        <div class="timeline-body" style="text-align:left;">
+                            <a ui-sref="singleCustomer({id:'{{log.id}}'})" class="timeline-body-title font-blue-madison">UDID: {{log.UDID}} <br><br></a>
+                            <div class="timeline-content">
+                                <!--  <img class="timeline-img pull-left" src="../../assets/admin/pages/media/blog/2.jpg" alt=""> -->
+                                <div ng-show="log.user_android">
+                                    {{log.name}} called {{log.count}}
+                                    <ng-pluralize count="log.count" when="{'one':'time' , 'other': 'times'}"></ng-pluralize> from Android: {{log.user_android.android_app_version}} ( {{log.user_android.android_app_version_code}} ).
+                                </div>
+                                <div ng-show="log.user_ios">
+                                    {{log.name}} called {{log.count}}
+                                    <ng-pluralize count="log.count" when="{'one':'time' , 'other': 'times'}"></ng-pluralize> from IOS: {{log.user_ios.ios_app_release}} ({{log.user_ios.ios_app_version}}).
+                                </div>
+                            </div>
+                            <!-- <div class="timeline-footer">
+                                You can show the details in his profile
+                                <a ui-sref="singleCustomer({id:'{{log.id}}'})">
+                                    here
+                                </a>. -->
+                                <!-- <a href="javascript:;" class="nav-link pull-right">
+                                Read more <i class="m-icon-swapright m-icon-white"></i>
+                            </a> -->
+                            <!-- </div> -->
+                    </li>
+                </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <center>
+        <button class="center-block btn btn-inverse" ng-click="loadMore()">Load More..</button>
+        <div class="container">
+            <!-- <div class="spinner"></div> -->
+            <div ng-show="show" class="spinner border"></div>
+            <!-- <div class="spinner arrow"><div class="arrow1"></div><div class="arrow2"></div></div> -->
+        </div>
+    </center>
+
+
+
+   <!--  <br>
+    <br>
+    <div class="portlet-body">
+        <div class="row">
+            <div class="col-md-12">
+                <ul class="timeline">
+                    <li ng-repeat="1 in [1,2,3]" class="timeline-yellow">
+                        <div class="timeline-time">
+                            <span class="date">
+
+                                hello
+                            </span>
+                            <span class="time">
+hello                            </span>
+                        </div>
+                        <div class="timeline-icon">
+                            <i class="fa fa-clock-o"></i>
+                        </div>
+                        <div class="timeline-body" style="text-align:left;">
+                            <a class="timeline-body-title font-blue-madison">hello</a>
+                            <div class="timeline-content">
+                                <!--  <img class="timeline-img pull-left" src="../../assets/admin/pages/media/blog/2.jpg" alt=""> -->
+                               <!--  hello<br> -->
+    <!-- <br> hello hello<br>
+    <br> hello </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div> -->
+ 
