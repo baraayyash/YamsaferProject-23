@@ -6,62 +6,100 @@ var Customer = require('../customer/customer.model');
 
 // Get list of callLogs
 exports.index = function(req, res) {
-  CallLog.find(function (err, callLogs) {
-    if(err) { return handleError(res, err); }
-    return res.json(200, callLogs);
-  });
+    CallLog.find(function(err, callLogs) {
+        if (err) {
+            return handleError(res, err);
+        }
+        return res.json(200, callLogs);
+    });
 };
 
 // Get a single callLog
 exports.show = function(req, res) {
-  CallLog.findById(req.params.id, function (err, callLog) {
-    if(err) { return handleError(res, err); }
-    if(!callLog) { return res.send(404); }
-    return res.json(callLog);
-  });
+    CallLog.findById(req.params.id, function(err, callLog) {
+        if (err) {
+            return handleError(res, err);
+        }
+        if (!callLog) {
+            return res.send(404);
+        }
+        return res.json(callLog);
+    });
 };
 
-exports.searchByDate = function(req,res) {
+exports.searchByDate = function(req, res) {
 
-  console.log(req.params);
-  var start = req.params.start;
-  var end = req.params.end;
-   // console.log(Date.parse(start));
-   // console.log(Date.parse(end));
-  CallLog.find({date: {"$gte": new Date(start), "$lt": new Date(end)} },
-    function (err, transaction) {
-    if(err) { return handleError(res, err); }
-    return res.json(transaction);
-    console.log(transaction);
-  });
+    console.log(req.params);
+    var start = req.params.start;
+    var end = req.params.end;
+    // console.log(Date.parse(start));
+    // console.log(Date.parse(end));
+    CallLog.find({
+            date: {
+                "$gte": new Date(start),
+                "$lt": new Date(end)
+            }
+        },
+        function(err, transaction) {
+            if (err) {
+                return handleError(res, err);
+            }
+            return res.json(transaction);
+            console.log(transaction);
+        });
 
 };
 
-exports.searchByName = function(req,res) {
 
-    var flag=0;
-  
-   Customer.find({ $or: [{name:new RegExp(req.params.id, "i")},
-    {UDID: new RegExp(req.params.id, "i")},
-    {phone: new RegExp(req.params.id, "i")}] } ,
-    function (err, cust) {
-    if(err) { return handleError(res, err); }
-    if(!cust) { return res.send(404); }   
-       var cusarray=[];
-       for(var i=0;i<cust.length;i++){
-    CallLog.find({customer:cust[i]._id}, function (err, callLog) {
-    if(err) { return handleError(res, err); }
-    if(!callLog) { return res.send(404); }
-    for(var i =0;i<callLog.length;i++){
-        flag++;
-        cusarray.push(callLog[i].customer);
-    }
-    if(flag==callLog.length){
-    startFunctionOfTenQueries(cusarray);
-    }
-  });
-   }   
-   });
+
+exports.searchByName = function(req, res) {
+
+    // Filter to find by
+    var filter = new RegExp(req.params.id, "i");
+
+    // Mongoose query
+    var query = {
+        $or: [{
+            name: filter
+        }, {
+            UDID: filter
+        }, {
+            phone: filter
+        }]
+    };
+
+    var onQuerySuccess = function(err, cust) {
+        if (err) {
+            return handleError(res, err);
+        }
+        if (!cust) {
+            return res.send(404);
+        }
+        var cusarray = [];
+        for (var i = 0; i < cust.length; i++) {
+            CallLog.find({
+                customer: cust[i]._id
+            }, function(err, callLog) {
+                if (err) {
+                    return handleError(res, err);
+                }
+                if (!callLog) {
+                    return res.send(404);
+                }
+                for (var i = 0; i < callLog.length; i++) {
+                    flag++;
+                    cusarray.push(callLog[i].customer);
+                }
+                if (flag == callLog.length) {
+                    startFunctionOfTenQueries(cusarray);
+                }
+            });
+        }
+    };
+
+
+    Customer.find(query, onQuerySuccess);
+
 
     var startFunctionOfTenQueries = function(arrayOfCustomerID) {
             var allTenResultOfTimeLine = [];
@@ -85,42 +123,58 @@ exports.searchByName = function(req,res) {
         return res.json(allTenResult);
     }
 
-  
+
 };
 
 
 // Creates a new callLog in the DB.
 exports.create = function(req, res) {
-  CallLog.create(req.body, function(err, callLog) {
-    if(err) { return handleError(res, err); }
-    return res.json(201, callLog);
-  });
+    CallLog.create(req.body, function(err, callLog) {
+        if (err) {
+            return handleError(res, err);
+        }
+        return res.json(201, callLog);
+    });
 };
 
 // Updates an existing callLog in the DB.
 exports.update = function(req, res) {
-  if(req.body._id) { delete req.body._id; }
-  CallLog.findById(req.params.id, function (err, callLog) {
-    if (err) { return handleError(res, err); }
-    if(!callLog) { return res.send(404); }
-    var updated = _.merge(callLog, req.body);
-    updated.save(function (err) {
-      if (err) { return handleError(res, err); }
-      return res.json(200, callLog);
+    if (req.body._id) {
+        delete req.body._id;
+    }
+    CallLog.findById(req.params.id, function(err, callLog) {
+        if (err) {
+            return handleError(res, err);
+        }
+        if (!callLog) {
+            return res.send(404);
+        }
+        var updated = _.merge(callLog, req.body);
+        updated.save(function(err) {
+            if (err) {
+                return handleError(res, err);
+            }
+            return res.json(200, callLog);
+        });
     });
-  });
 };
 
 // Deletes a callLog from the DB.
 exports.destroy = function(req, res) {
-  CallLog.findById(req.params.id, function (err, callLog) {
-    if(err) { return handleError(res, err); }
-    if(!callLog) { return res.send(404); }
-    callLog.remove(function(err) {
-      if(err) { return handleError(res, err); }
-      return res.send(204);
+    CallLog.findById(req.params.id, function(err, callLog) {
+        if (err) {
+            return handleError(res, err);
+        }
+        if (!callLog) {
+            return res.send(404);
+        }
+        callLog.remove(function(err) {
+            if (err) {
+                return handleError(res, err);
+            }
+            return res.send(204);
+        });
     });
-  });
 };
 
 // Get a single callLog
@@ -130,13 +184,15 @@ var findOneCallLogByID = function(IdSent, callback) {
         count: undefined,
         lastDate: undefined,
         name: undefined,
-        UDID:undefined,
+        UDID: undefined,
         blocked: undefined
 
     };
-   
+
     //query to find count of how many times customer called
-    CallLog.count({customer: IdSent}, function(err, c) {
+    CallLog.count({
+        customer: IdSent
+    }, function(err, c) {
         if (err) {
             console.log("count err")
         }
@@ -178,28 +234,28 @@ var findOneCallLogByID = function(IdSent, callback) {
                 function(err, callLogForPopulate) {
                     timelineQuery.name = callLogForPopulate.customer.name;
                     timelineQuery.blocked = callLogForPopulate.customer.blocked;
-                    timelineQuery.UDID=callLogForPopulate.customer.UDID;
-                      if (callLogForPopulate.customer.User_Type=="iOS") {
-                         timelineQuery.user_ios = {
-                              ios_app_release: callLogForPopulate.customer.user_ios.ios_app_release,
-                              ios_app_version: callLogForPopulate.customer.user_ios.ios_app_version,
-                              ios_device_model: callLogForPopulate.customer.user_ios.ios_device_model,
-                              ios_lib_version: callLogForPopulate.customer.user_ios.ios_lib_version,
-                              ios_version: callLogForPopulate.customer.user_ios.ios_version    
-                         }
-                     }else {
-                            timelineQuery.user_android={
+                    timelineQuery.UDID = callLogForPopulate.customer.UDID;
+                    if (callLogForPopulate.customer.User_Type == "iOS") {
+                        timelineQuery.user_ios = {
+                            ios_app_release: callLogForPopulate.customer.user_ios.ios_app_release,
+                            ios_app_version: callLogForPopulate.customer.user_ios.ios_app_version,
+                            ios_device_model: callLogForPopulate.customer.user_ios.ios_device_model,
+                            ios_lib_version: callLogForPopulate.customer.user_ios.ios_lib_version,
+                            ios_version: callLogForPopulate.customer.user_ios.ios_version
+                        }
+                    } else {
+                        timelineQuery.user_android = {
                             android_app_version: callLogForPopulate.customer.user_android.android_app_version,
                             android_app_version_code: callLogForPopulate.customer.user_android.android_app_version_code,
                             android_brand: callLogForPopulate.customer.user_android.android_brand,
                             android_devices: callLogForPopulate.customer.user_android.android_devices,
-                            android_lib_version: callLogForPopulate.customer.user_android.android_lib_version,   
+                            android_lib_version: callLogForPopulate.customer.user_android.android_lib_version,
                             android_manufacturer: callLogForPopulate.customer.user_android.android_manufacturer,
                             android_model: callLogForPopulate.customer.user_android.android_model,
                             android_os: callLogForPopulate.customer.user_android.android_os,
                             android_os_version: callLogForPopulate.customer.user_android.android_os_version
-                            } 
-                         }
+                        }
+                    }
 
 
                     returnResultNow();
@@ -212,7 +268,7 @@ var findOneCallLogByID = function(IdSent, callback) {
 };
 
 exports.timeline = function(req, res) {
-    
+
     //array of 10 last users to display on timeline
     var arrOfId = [];
     /*
@@ -269,7 +325,7 @@ exports.timeline = function(req, res) {
 }
 
 function handleError(res, err) {
-  return res.send(500, err);
+    return res.send(500, err);
 }
 
 // Get a single callLog
@@ -279,13 +335,15 @@ exports.sendBackLastCallLog = function(IdSent, callback) {
         count: undefined,
         lastDate: undefined,
         name: undefined,
-        UDID:undefined,
+        UDID: undefined,
         blocked: undefined
 
     };
-   
+
     //query to find count of how many times customer called
-    CallLog.count({customer: IdSent}, function(err, c) {
+    CallLog.count({
+        customer: IdSent
+    }, function(err, c) {
         if (err) {
             console.log("count err")
         }
@@ -327,28 +385,28 @@ exports.sendBackLastCallLog = function(IdSent, callback) {
                 function(err, callLogForPopulate) {
                     timelineQuery.name = callLogForPopulate.customer.name;
                     timelineQuery.blocked = callLogForPopulate.customer.blocked;
-                    timelineQuery.UDID=callLogForPopulate.customer.UDID;
-                      if (callLogForPopulate.customer.User_Type=="iOS") {
-                         timelineQuery.user_ios = {
-                              ios_app_release: callLogForPopulate.customer.user_ios.ios_app_release,
-                              ios_app_version: callLogForPopulate.customer.user_ios.ios_app_version,
-                              ios_device_model: callLogForPopulate.customer.user_ios.ios_device_model,
-                              ios_lib_version: callLogForPopulate.customer.user_ios.ios_lib_version,
-                              ios_version: callLogForPopulate.customer.user_ios.ios_version    
-                         }
-                     }else {
-                            timelineQuery.user_android={
+                    timelineQuery.UDID = callLogForPopulate.customer.UDID;
+                    if (callLogForPopulate.customer.User_Type == "iOS") {
+                        timelineQuery.user_ios = {
+                            ios_app_release: callLogForPopulate.customer.user_ios.ios_app_release,
+                            ios_app_version: callLogForPopulate.customer.user_ios.ios_app_version,
+                            ios_device_model: callLogForPopulate.customer.user_ios.ios_device_model,
+                            ios_lib_version: callLogForPopulate.customer.user_ios.ios_lib_version,
+                            ios_version: callLogForPopulate.customer.user_ios.ios_version
+                        }
+                    } else {
+                        timelineQuery.user_android = {
                             android_app_version: callLogForPopulate.customer.user_android.android_app_version,
                             android_app_version_code: callLogForPopulate.customer.user_android.android_app_version_code,
                             android_brand: callLogForPopulate.customer.user_android.android_brand,
                             android_devices: callLogForPopulate.customer.user_android.android_devices,
-                            android_lib_version: callLogForPopulate.customer.user_android.android_lib_version,   
+                            android_lib_version: callLogForPopulate.customer.user_android.android_lib_version,
                             android_manufacturer: callLogForPopulate.customer.user_android.android_manufacturer,
                             android_model: callLogForPopulate.customer.user_android.android_model,
                             android_os: callLogForPopulate.customer.user_android.android_os,
                             android_os_version: callLogForPopulate.customer.user_android.android_os_version
-                            } 
-                         }
+                        }
+                    }
 
 
                     returnResultNow();
