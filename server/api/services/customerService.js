@@ -2,7 +2,7 @@ var _ = require('lodash');
 var Customer = require('../customer/customer.model');
 var Transaction = require('../transaction/transaction.model');
 var CallLog = require('../callLog/callLog.model');
-var cityToCoor=require('./cityToCoordinates');
+var cityToCoor=require('../services/cityToCoordinates');
 
 //saving data that returned from MixPanel
 exports.createCustomer = function(data) {
@@ -62,12 +62,55 @@ exports.createCustomer = function(data) {
             return handleError(res, err);
         }
 
-        for (var i in data.$transactions) {
-            var req = {
-                amount: data.$transactions[i].$amount,
-                time: data.$transactions[i].$time,
-                customer: customer._id
+ // fetching data from Yamsafer
+
+    var mysql      = require('mysql');
+    var connection = mysql.createConnection({
+      driver    : 'mysql',
+     host      : 'api-staging.yamsafer.me',
+     database  :  'thewall',
+     user  : 'root',
+     password  : 'yamsaferCRMteam',
+     charset   : 'utf8',
+     collation : 'utf8_unicode_ci',
+     prefix    : '',
+    });
+
+     var req = {
+         UDID:1014 ,
+         email:"faris@yamsafer.me",
+         phone: "972544735168",
+     };
+
+    connection.connect();
+
+
+    connection.query('SELECT DISTINCT orders.id,orders.no_show,orders.checkin_date,orders.checkout_date,orders.hotel_id,orders.hotel_name,orders.total_price,orders.created_at,orders.cancelled FROM orders INNER JOIN customers ON orders.customer_id=customers.id where udid = '+req.UDID+' or email= '+' "  ' +  req.email+'  " '+ ' or phone='+req.phone+'  limit 0,100', function(err, rows, fields) {
+      if (err) throw err;
+      //res.json(rows);
+     // con//sole.log(rows);
+    var lng;
+    var lat;
+console.log("id hotel : "+ rows[0].hotel_id);
+    rows.forEach(function(item) {
+
+        connection.query('SELECT * from properties where id='+item.hotel_id+'  limit 0,10', function(err, rows, fields) {
+        if (err) throw err;
+        console.log("lat :"+rows[0].latitude);
+
+         var req = {
+                 amount: item.total_price,
+                  time: item.created_at,
+                  lat : rows[0].latitude,
+                  lng : rows[0].longitude,
+                  no_show: item.no_show,
+                  checkin_date: item.checkin_date,
+                  checkout_date: item.checkout_date,
+                  Hotel: item.hotel_name,
+                  cancelled: item.cancelled,
+                  customer: customer._id
             };
+
             Transaction.create(req, function(err, transaction) {
                 if (err) {
                     return handleError(res, err);
@@ -75,7 +118,11 @@ exports.createCustomer = function(data) {
                 customer.transactions.push(transaction);
                 customer.save();
             });
-        }
+
+});
+     });
+    });
+
 //new call log for the customer
         var callLogReq = {
             customer: customer._id
@@ -87,12 +134,12 @@ exports.createCustomer = function(data) {
             customer.callLogs.push(callLog);
             customer.save();
         });
-         cityToCoor.getLngLat(data.$country_code,function (lng,lat){
+                    cityToCoor.getLngLat(data.$country_code,function (lng,lat){
               customer.cityLng=lng;
               customer.cityLat=lat;
             customer.save();
                 });
-    
+
         customer.save();
 
     });

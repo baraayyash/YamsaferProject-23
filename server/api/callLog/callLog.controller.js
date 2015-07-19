@@ -33,7 +33,6 @@ exports.searchByDate = function(req,res) {
     function (err, transaction) {
     if(err) { return handleError(res, err); }
     return res.json(transaction);
-    console.log(transaction);
   });
 
 };
@@ -52,7 +51,7 @@ exports.searchByName = function(req,res) {
        for(var i=0;i<cust.length;i++){
     CallLog.find({customer:cust[i]._id}, function (err, callLog) {
     if(err) { return handleError(res, err); }
-    if(!callLog) { return res.send(404); }
+    if(!callLog) {return res.send(404); }
     for(var i =0;i<callLog.length;i++){
         flag++;
         cusarray.push(callLog[i].customer);
@@ -131,9 +130,8 @@ exports.timeline = function(req, res) {
             }
             //array with no duplicates
         var uniqueArrOfCust = ArrNoDupe(arrOfCust);
-
-        // startFunctionOfTenQueries(uniqueArrOfCust);
-   startFunctionOfTenQueries(uniqueArrOfCust,function(dataReturned){
+        var startIndex=req.param('udid')||0;
+   startFunctionOfTenQueries(uniqueArrOfCust.splice(startIndex,2),function(dataReturned){
       res.json(dataReturned);
     });
   });
