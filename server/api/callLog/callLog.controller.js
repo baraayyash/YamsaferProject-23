@@ -33,7 +33,6 @@ exports.searchByDate = function(req,res) {
     function (err, transaction) {
     if(err) { return handleError(res, err); }
     return res.json(transaction);
-    console.log(transaction);
   });
 
 };
@@ -52,41 +51,19 @@ exports.searchByName = function(req,res) {
        for(var i=0;i<cust.length;i++){
     CallLog.find({customer:cust[i]._id}, function (err, callLog) {
     if(err) { return handleError(res, err); }
-    if(!callLog) { return res.send(404); }
+    if(!callLog) {return res.send(404); }
     for(var i =0;i<callLog.length;i++){
         flag++;
         cusarray.push(callLog[i].customer);
     }
     if(flag==callLog.length){
-    startFunctionOfTenQueries(cusarray);
+    startFunctionOfTenQueries(cusarray,function(dataReturned){
+      res.json(dataReturned);
+      });
     }
   });
-   }   
-   });
-
-    var startFunctionOfTenQueries = function(arrayOfCustomerID) {
-            var allTenResultOfTimeLine = [];
-
-            function uploader(i) {
-                if (i < arrayOfCustomerID.length) {
-                    findOneCallLogByID(arrayOfCustomerID[i], function(resulttt) {
-                        allTenResultOfTimeLine.push(resulttt);
-                        if (allTenResultOfTimeLine.length == arrayOfCustomerID.length) {
-                            tenQueries(allTenResultOfTimeLine);
-                        }
-                        uploader(i + 1)
-                    })
-                }
-            }
-            uploader(0);
-
-        }
-        //send response back to requested url
-    var tenQueries = function(allTenResult) {
-        return res.json(allTenResult);
-    }
-
-  
+}   
+});
 };
 
 
@@ -153,35 +130,35 @@ exports.timeline = function(req, res) {
             }
             //array with no duplicates
         var uniqueArrOfCust = ArrNoDupe(arrOfCust);
-
-        startFunctionOfTenQueries(uniqueArrOfCust);
+        var startIndex=req.param('udid')||0;
+   startFunctionOfTenQueries(uniqueArrOfCust.splice(startIndex,2),function(dataReturned){
+      res.json(dataReturned);
     });
-
-    //function has 10 arrays and call findOneCallLOgById to get data to each customer
-    var startFunctionOfTenQueries = function(arrayOfCustomerID) {
-            var allTenResultOfTimeLine = [];
-
-            function uploader(i) {
-                if (i < arrayOfCustomerID.length) {
-                          callLogService.findOneCallLogByID(arrayOfCustomerID[i],function(resulttt){
-                        allTenResultOfTimeLine.push(resulttt);
-                        if (allTenResultOfTimeLine.length == arrayOfCustomerID.length) {
-                            tenQueries(allTenResultOfTimeLine);
-                        }
-                        uploader(i + 1)
-                    })
-                }
-            }
-            uploader(0);
-
-        }
-      //  send response back to requested url
-    var tenQueries = function(allTenResult) {
-        return res.json(allTenResult);
-    }
+  });
 };
 
+   
 function handleError(res, err) {
   return res.send(500, err);
 }
+
+    //function has 10 arrays and call findOneCallLOgById to get data to each customer
+    var startFunctionOfTenQueries = function(arrayOfCustomerID,callback) {
+            var allTenResultOfTimeLine = [];
+
+            function loopAsync(i) {
+                if (i < arrayOfCustomerID.length) {
+                callLogService.findOneCallLogByID(arrayOfCustomerID[i],function(resulttt){
+                allTenResultOfTimeLine.push(resulttt);
+               if (allTenResultOfTimeLine.length == arrayOfCustomerID.length) {
+                  callback(allTenResultOfTimeLine);
+                 }
+                 loopAsync(i + 1)
+                    })
+                }
+            }
+            loopAsync(0);
+
+        }
+
 
