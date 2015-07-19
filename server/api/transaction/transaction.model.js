@@ -4,6 +4,7 @@ var mongoose = require('mongoose'),
     Schema = mongoose.Schema;
 
 var TransactionSchema = new Schema({
+  Yamsafer_id:Number,
   amount: Number,
   time: Date,
   lng:Number,
