@@ -84,18 +84,13 @@ exports.createCustomer = function(data) {
             phone: "972544735168",
         };
 
-        connection.query('SELECT DISTINCT orders.id,orders.no_show,orders.checkin_date,orders.checkout_date,orders.hotel_id,orders.hotel_name,orders.total_price,orders.created_at,orders.cancelled FROM orders INNER JOIN customers ON orders.customer_id=customers.id where udid = ' + req.UDID + ' or email= ' + ' "  ' + req.email + '  " ' + ' or phone=' + req.phone + '  limit 0,100', function(err, rows, fields) {
+        connection.query('SELECT DISTINCT orders.id,orders.no_show,orders.checkin_date,orders.checkout_date,orders.hotel_id,orders.hotel_name,orders.total_price,orders.created_at,orders.cancelled FROM orders INNER JOIN customers ON orders.customer_id=customers.id where udid = ' + req.UDID + ' or phone  like "%%'+req.phone+'%%"  limit 0,100', function(err, rows, fields) {
             if (err) throw err;
-            //res.json(rows);
-            // con//sole.log(rows);
-            var lng;
-            var lat;
-            console.log("id hotel : " + rows[0].hotel_id);
+
             rows.forEach(function(item) {
 
                 connection.query('SELECT * from properties where id=' + item.hotel_id + '  limit 0,10', function(err, rows, fields) {
                     if (err) throw err;
-                    console.log("lat :" + rows[0].latitude);
 
                     var req = {
                         Yamsafer_id: item.id,
@@ -223,19 +218,20 @@ exports.updateCustomer = function(data, customer) {
                 phone: "972544735168",
             };
 
-            connection.query('SELECT DISTINCT orders.id,orders.no_show,orders.checkin_date,orders.checkout_date,orders.hotel_id,orders.hotel_name,orders.total_price,orders.created_at,orders.cancelled FROM orders INNER JOIN customers ON orders.customer_id=customers.id where udid = ' + req.UDID + ' or email= ' + ' "  ' + req.email + '  " ' + ' or phone=' + req.phone + '  limit 0,100', function(err, rows, fields) {
+            connection.query('SELECT DISTINCT orders.id,orders.no_show,orders.checkin_date,orders.checkout_date,orders.hotel_id,orders.hotel_name,orders.total_price,orders.created_at,orders.cancelled FROM orders INNER JOIN customers ON orders.customer_id=customers.id where udid = ' + req.UDID + ' or phone  like "%%'+req.phone+'%%" limit 0,100', function(err, rows, fields) {
                 if (err) throw err;
 
                 rows.forEach(function(item) {
 
                     Transaction.findOne({
                         Yamsafer_id: item.id
-                    }, function(err, transaction) {
+                    },
+                    function(err, transaction) {
                         if (err) {
                             return console.log(err);
                         }
                         if (!transaction) {
-                            console.log("new trans ! ");
+
                             connection.query('SELECT * from properties where id=' + item.hotel_id + '  limit 0,10', function(err, rows, fields) {
                                 if (err) throw err;
 
