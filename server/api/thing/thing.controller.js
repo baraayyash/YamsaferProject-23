@@ -36,7 +36,7 @@ connection.connect();
          phone: "972544735168",
      };
 
-connection.query('SELECT * from properties where id = 10120  limit 0,10', function(err, rows, fields) {
+connection.query('SELECT * from customers where phone like  "%%'+972568600919+'%%"  limit 0,10', function(err, rows, fields) {
   if (err) throw err;
  res.json(rows);
 // console.log(rows);
@@ -45,14 +45,14 @@ rows.forEach(function(item) { console.log('id: '+item.id) });
 
 });
 
-connection.query('SELECT DISTINCT orders.id,orders.no_show,orders.checkin_date,orders.checkout_date,orders.hotel_id,orders.hotel_name,orders.total_price,orders.created_at,orders.cancelled FROM orders INNER JOIN customers ON orders.customer_id=customers.id where udid = '+req.UDID+' or email= '+' "  ' +  req.email+'  " '+ ' or phone='+req.phone+'  limit 0,100', function(err, rows, fields) {
-  if (err) throw err;
- // res.json(rows);
-// console.log(rows);
+// connection.query('SELECT DISTINCT orders.id,orders.no_show,orders.checkin_date,orders.checkout_date,orders.hotel_id,orders.hotel_name,orders.total_price,orders.created_at,orders.cancelled FROM orders INNER JOIN customers ON orders.customer_id=customers.id where udid = '+req.UDID+' or email= '+' "  ' +  req.email+'  " '+ ' or phone='+req.phone+'  limit 0,100', function(err, rows, fields) {
+//   if (err) throw err;
+//  // res.json(rows);
+// // console.log(rows);
 
-rows.forEach(function(item) { console.log('id: '+item.id) });
+// rows.forEach(function(item) { console.log('id: '+item.id) });
 
-});
+// });
 
 
 };
