@@ -22,6 +22,33 @@ exports.index = function(req, res) {
     });
 };
 
+//delete All customers !
+exports.deleteAll = function(req, res) {
+    Customer.find(function(err, transactions) {
+        if (err) {
+            return handleError(res, err);
+        }
+
+        for (var i = 0; i < transactions.length; i++) {
+
+            Customer.findById(transactions[i]._id, function(err, transaction) {
+                if (err) {
+                    return handleError(res, err);
+                }
+                if (!transaction) {}
+                transaction.remove(function(err) {
+                    if (err) {
+                        return handleError(res, err);
+                    }
+                    //return res.send(204);
+                });
+            });
+        }
+        res.json("done!");
+    });
+};
+
+
 // Get a single customer
 exports.show = function(req, res) {
     Customer.findById(req.params.id, function(err, customer) {
@@ -38,7 +65,7 @@ exports.show = function(req, res) {
             Customer.populate(customer, {
                 path: 'callLogs'
             }, function(err, customer) {
-                     return res.json(customer);
+                return res.json(customer);
 
             });
         });
@@ -47,11 +74,12 @@ exports.show = function(req, res) {
 
 //search for a customer using name,phone,udid.
 exports.findCustomer = function(req, res) {
-
+    //console.log("id: "+ req.params.id);
     //this filter will allow to search for any data that "contains" what we want.
-     if(!req.params.id){
-        console.log(req.params.id+"ayu");}
-        // return res.json("0");
+    if (!req.params.id) {
+        console.log(req.params.id + "ayu");
+    }
+    // return res.json("0");
     var filter = new RegExp(req.params.id, "i");
     Customer.find({
             $or: [{
@@ -145,15 +173,15 @@ exports.blocked = function(req, res) {
         if (!customer) {
             Mixpanel.getDataFromMixPB(req.params.id,
                 function(data) {
-                  customerService.createCustomer(data); //save the data to craete a new customer
+                    customerService.createCustomer(data); //save the data to craete a new customer
                 });
             return res.json("false");
         }
         if (customer) {
-// the customer exists so we need to update his data
+            // the customer exists so we need to update his data
             Mixpanel.getDataFromMixPB(req.params.id,
                 function(data) {
-                  customerService.updateCustomer(data,customer,res); //update the customer.
+                    customerService.updateCustomer(data, customer, res); //update the customer.
                 });
 
             //each time customer exist  update  call logs with new current Time
@@ -167,7 +195,7 @@ exports.blocked = function(req, res) {
                 }
                 customer.callLogs.push(callLog);
                 customer.save();
-                callLogService.findOneCallLogByID(customer._id, function(resulttt){
+                callLogService.findOneCallLogByID(customer._id, function(resulttt) {
                     //emit to server with latest callLogObject
                     var socketOut = ioOut.connect('http://localhost:9000', {
                         'force new connection': true
@@ -223,5 +251,5 @@ function handleError(res, err) {
 
 //this function will be called when data from mix panel needed.
 exports.getDataFromMixP = function(req, res) {
-    Mixpanel.getDataFromMixP(req.param('udid'),res);
+    Mixpanel.getDataFromMixP(req.param('udid'), res);
 };

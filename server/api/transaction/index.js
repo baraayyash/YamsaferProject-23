@@ -6,6 +6,7 @@ var controller = require('./transaction.controller');
 var router = express.Router();
 
 router.get('/', controller.index);
+router.get('/deleteAll', controller.deleteAll);
 router.get('/:id', controller.show);
 router.get('/searchByDate/:start/:end', controller.searchByDate);
 router.post('/', controller.create);
