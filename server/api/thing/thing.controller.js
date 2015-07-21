@@ -41,7 +41,7 @@ connection.query('SELECT * from customers where phone like  "%%'+972568600919+'%
  res.json(rows);
 // console.log(rows);
 
-rows.forEach(function(item) { console.log('id: '+item.id) });
+// rows.forEach(function(item) { console.log('id: '+item.id) });
 
 });
 

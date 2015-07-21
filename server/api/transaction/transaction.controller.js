@@ -11,6 +11,29 @@ exports.index = function(req, res) {
   });
 };
 
+exports.deleteAll = function(req, res) {
+  Transaction.find(function (err, transactions) {
+    if(err) { return handleError(res, err); }
+
+    for(var i=0;i<transactions.length;i++){
+
+    Transaction.findById(transactions[i]._id, function (err, transaction) {
+    if(err) { return handleError(res, err); }
+    if(!transaction) {}
+    transaction.remove(function(err) {
+      if(err) { return handleError(res, err); }
+      //return res.send(204);
+    });
+  });
+
+
+    }
+
+res.json("done!");
+
+  });
+};
+
 // Get a single transaction
 exports.show = function(req, res) {
   Transaction.findById(req.params.id, function (err, transaction) {

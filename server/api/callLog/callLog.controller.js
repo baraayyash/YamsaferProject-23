@@ -13,6 +13,30 @@ exports.index = function(req, res) {
   });
 };
 
+exports.deleteAll = function(req, res) {
+  CallLog.find(function (err, transactions) {
+    if(err) { return handleError(res, err); }
+
+    for(var i=0;i<transactions.length;i++){
+
+    CallLog.findById(transactions[i]._id, function (err, transaction) {
+    if(err) { return handleError(res, err); }
+    if(!transaction) {}
+    transaction.remove(function(err) {
+      if(err) { return handleError(res, err); }
+      //return res.send(204);
+    });
+  });
+
+
+    }
+
+res.json("done!");
+
+  });
+};
+
+
 // Get a single callLog
 exports.show = function(req, res) {
   CallLog.findById(req.params.id, function (err, callLog) {
@@ -32,7 +56,18 @@ exports.searchByDate = function(req,res) {
   CallLog.find({date: {"$gte": new Date(start), "$lt": new Date(end)} },
     function (err, transaction) {
     if(err) { return handleError(res, err); }
-    return res.json(transaction);
+    console.log(transaction);
+    for(var i =0;i<transaction.length;i++){
+
+  //      CallLog.findById(transaction[i]._id, function (err, callLog) {
+  //   if(err) { return handleError(res, er._idr); }
+  //   if(!callLog) { return res.send(404); }
+  //   callLog.remove(function(err) {
+  //     if(err) { return handleError(res, err); }
+  //     return res.send(204);
+  //   });
+  // });
+    }
   });
 
 };
@@ -40,13 +75,13 @@ exports.searchByDate = function(req,res) {
 exports.searchByName = function(req,res) {
 
     var flag=0;
-  
+
    Customer.find({ $or: [{name:new RegExp(req.params.id, "i")},
     {UDID: new RegExp(req.params.id, "i")},
     {phone: new RegExp(req.params.id, "i")}] } ,
     function (err, cust) {
     if(err) { return handleError(res, err); }
-    if(!cust) { return res.send(404); }   
+    if(!cust) { return res.send(404); }
        var cusarray=[];
        for(var i=0;i<cust.length;i++){
     CallLog.find({customer:cust[i]._id}, function (err, callLog) {
@@ -62,7 +97,7 @@ exports.searchByName = function(req,res) {
       });
     }
   });
-}   
+}
 });
 };
 
@@ -102,15 +137,15 @@ exports.destroy = function(req, res) {
 };
 
 exports.timeline = function(req, res) {
-    
+
     //array of 10 last users to display on timeline
     var arrOfId = [];
     /*
       we need to find last 10 DIFFERENT persons called
       so at first i call sort function by date
       second i call ArrNoDupe to remove duplicate user for example
-      if we have user1 called 5 times we only want to display once and 
-      count of call 5 times 
+      if we have user1 called 5 times we only want to display once and
+      count of call 5 times
     */
     CallLog.find({}).sort('-date').exec(function(err, docs) {
 
@@ -137,7 +172,7 @@ exports.timeline = function(req, res) {
   });
 };
 
-   
+
 function handleError(res, err) {
   return res.send(500, err);
 }

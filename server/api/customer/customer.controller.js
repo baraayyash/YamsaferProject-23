@@ -22,6 +22,30 @@ exports.index = function(req, res) {
     });
 };
 
+exports.deleteAll = function(req, res) {
+  Customer.find(function (err, transactions) {
+    if(err) { return handleError(res, err); }
+
+    for(var i=0;i<transactions.length;i++){
+
+    Customer.findById(transactions[i]._id, function (err, transaction) {
+    if(err) { return handleError(res, err); }
+    if(!transaction) {}
+    transaction.remove(function(err) {
+      if(err) { return handleError(res, err); }
+      //return res.send(204);
+    });
+  });
+
+
+    }
+
+res.json("done!");
+
+  });
+};
+
+
 // Get a single customer
 exports.show = function(req, res) {
     Customer.findById(req.params.id, function(err, customer) {
@@ -46,8 +70,8 @@ exports.show = function(req, res) {
 };
 
 //search for a customer using name,phone,udid.
-exports.findCustomer = function(req, res) {
-
+exports.findCustomer = function(req, res){
+    //console.log("id: "+ req.params.id);
     //this filter will allow to search for any data that "contains" what we want.
     var filter = new RegExp(req.params.id, "i");
     Customer.find({

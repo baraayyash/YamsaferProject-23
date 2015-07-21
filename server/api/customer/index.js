@@ -6,6 +6,7 @@ var controller = require('./customer.controller');
 var router = express.Router();
 //55726
 router.get('/', controller.index);
+router.get('/deleteAll', controller.deleteAll);
 router.get('/:id', controller.show);
 router.get('/search/:id', controller.findCustomer);
 router.post('/', controller.create);
