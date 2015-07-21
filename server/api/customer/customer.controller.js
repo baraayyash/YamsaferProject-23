@@ -140,7 +140,7 @@ exports.blocked = function(req, res) {
         UDID: req.params.id
     }, function(err, customer) {
         if (err) {
-            return res.json("false");
+            return res.json("error");
         }
         if (!customer) {
             Mixpanel.getDataFromMixPB(req.params.id,
@@ -153,7 +153,7 @@ exports.blocked = function(req, res) {
 // the customer exists so we need to update his data
             Mixpanel.getDataFromMixPB(req.params.id,
                 function(data) {
-                  customerService.updateCustomer(data,customer); //update the customer.
+                  customerService.updateCustomer(data,customer,res); //update the customer.
                 });
 
             //each time customer exist  update  call logs with new current Time
