@@ -1,11 +1,10 @@
 "use strict";
 var _ = require('lodash');
 var CallLog = require('../callLog/callLog.model');
-
+var Customer = require('../customer/customer.model');
 // this function create an object that will be shown on timeline
-exports.findOneCallLogByID = function(IdSent, callback) {
+exports.findOneCallLogByID = function(obj, callback) {
     var timelineQuery = {
-        count: undefined,
         lastDate: undefined,
         name: undefined,
         UDID: undefined,
@@ -16,48 +15,9 @@ exports.findOneCallLogByID = function(IdSent, callback) {
         blocked: undefined
 
     };
-    //query to find count of how many times customer called
-    CallLog.count({
-        customer: IdSent
-    }, function(err, c) {
-        if (err) {
-            console.log("count err")
-        }
-        timelineQuery.count = c;
-        sortCallLogsOfCust();
-    });
-
-    //sort call logs for customer by dat
-    //Change the -1 to a 1 to find the oldest.
-    var sortCallLogsOfCust = function() {
-        CallLog.findOne({
-            customer: IdSent
-        }, {}, {
-            sort: {
-                'date': -1
-            }
-        }, function(err, post) {
-            if (err) {
-                console.log("error findONe");
-            }
-            if(post !==null)
-            timelineQuery.date = post.date;
-            populateCustomerInfo();
-        });
-
-    }
-    var populateCustomerInfo = function() {
-        CallLog.findOne({
-            customer: IdSent
-        }, function(err, callLogForPopulate) {
-            if (err) {
-                return handleError(res, err);
-            }
-            if (!callLogForPopulate) {
-                // return res.send(404);
-                // not possible to be on timeline and no call logs
-            }
-            CallLog.populate(callLogForPopulate, {
+    
+             timelineQuery.date=obj.date;
+                CallLog.populate(obj, {
                     path: 'customer'
                 },
                 function(err, callLogForPopulate) {
@@ -95,10 +55,9 @@ exports.findOneCallLogByID = function(IdSent, callback) {
                             android_os_version: callLogForPopulate.customer.user_android.android_os_version
                         }
                     }
-                }
-                            callback(timelineQuery);
-                    //returnResultNow();
-                })
-        });
-    }
+                    }
+                                            callback(timelineQuery);
+                 });
+
+    
 };

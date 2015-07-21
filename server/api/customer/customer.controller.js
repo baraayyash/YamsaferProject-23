@@ -49,6 +49,9 @@ exports.show = function(req, res) {
 exports.findCustomer = function(req, res) {
 
     //this filter will allow to search for any data that "contains" what we want.
+     if(!req.params.id){
+        console.log(req.params.id+"ayu");}
+        // return res.json("0");
     var filter = new RegExp(req.params.id, "i");
     Customer.find({
             $or: [{

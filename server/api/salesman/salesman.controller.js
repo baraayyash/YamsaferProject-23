@@ -17,22 +17,19 @@ exports.index = function(req, res) {
 
 // Get a single salesman
 exports.show = function(req, res) {
-  console.log("start");
     Salesman.findById(req.params.id, function(err, salesman) {
         if (err) {
-        console.log("ee");
             return handleError(res, err);
-        
         }
         if (!salesman) {
-            // return res.send(404);
-            getDataFromMixP(req,res);
+            getDataFromMixP(req, res);
 
         }
-        Salesman.populate(salesman,{path:'transactions'},function(err,customer){
-      return res.json(salesman);
-  });
-      // return res.json(salesman);
+        Salesman.populate(salesman, {
+            path: 'transactions'
+        }, function(err, customer) {
+            return res.json(salesman);
+        });
     });
 };
 
@@ -85,73 +82,46 @@ exports.destroy = function(req, res) {
         });
     });
 };
- var saveData = function(data,res) {
-    var req ={
-    name: data["$first_name"]+data["$last_name"],
-    email: data["$email"]
+ var saveData = function(data, res) {
+     var req = {
+         name: data["$first_name"] + data["$last_name"],
+         email: data["$email"]
      };
-    
-    //     Customer.create(req, function(err, customer) {
-    // if(err) { return handleError(res, err); }
-    //   //console.log("added");
-    //   for (var i in data.$transactions) {
-    //     var req ={
-    //       amount: data.$transactions[i].$amount,
-    //       time: data.$transactions[i].$time,
-    //       customer: customer._id
-    //              };
-    //   Transaction.create(req, function(err, transaction) {
-    //   if(err) { return handleError(res, err); }
-    //  customer.transactions.push(transaction);
-    //  customer.save();
-    //   });
-    //    }
-    //   return console.log("done");
-    // });
 
+     Salesman.create(req, function(err, salesman) {
+         if (err) {
+             return handleError(res, err);
+         }
+         for (var i in data.$transactions) {
+             var req = {
+                 amount: data.$transactions[i].$amount,
+                 time: data.$transactions[i].$time,
+                 salesman: salesman._id
+             };
+             Transaction.create(req, function(err, transaction) {
+                 if (err) {
+                     return handleError(res, err);
+                 }
+                 salesman.transactions.push(transaction);
+                 salesman.save();
+             });
+         }
+         return console.log("done");
+     });
 
-
-        Salesman.create(req, function(err, salesman) {
-        if (err) {
-            return handleError(res, err);
-        }
-                //console.log("added");
-      for (var i in data.$transactions) {
-        var req ={
-          amount: data.$transactions[i].$amount,
-          time: data.$transactions[i].$time,
-          salesman: salesman._id
-                 };
-      Transaction.create(req, function(err, transaction) {
-      if(err) { return handleError(res, err); }
-     // return res.json(201, transaction);
-     salesman.transactions.push(transaction);
-     salesman.save();
-      });
-       }
-      return console.log("done");
-    
-        //return res.json(201, salesman);
-    });
-
-  };
+ };
   
-
 var getDataFromMixP = function(req, res) {
-  //var udid = req.param('udid');
-    var udid=req.params.id;
-    console.log("enter "+udid);
+    var udid = req.params.id;
+    console.log("enter " + udid);
     engage.queryEngageApi({
         where: "properties[\"$first_name\"] == \"" + "Naem" + "\"" || ""
-    }, function(queryDone) {  
-       // res.json(queryDone);
-        // var jsondata = JSON.parse(queryDone);
-        // results[i].$properties[r]
-         saveData(JSON.parse(queryDone,res));
-        // console.log(JSON.parse(queryDone));
-        //res.end();
+    }, function(queryDone) {
+        saveData(JSON.parse(queryDone, res));
+
     });
 };
+
 function handleError(res, err) {
     return res.send(500, err);
 }
