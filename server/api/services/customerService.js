@@ -24,7 +24,7 @@ exports.createCustomer = function(data) {
 
     var req = {
         UDID: data.UDID,
-        name: data.$first_name,
+        name: data.$first_name + " "  + data.$last_name ,
         timezone: data.$timezone,
         distinct_id: data.$distinct_id,
         email: data.$email,
@@ -148,7 +148,7 @@ exports.updateCustomer = function(data, customer) {
     var req = {
 
         UDID: data.UDID,
-        name: data.$first_name,
+        name: data.$first_name+" " +data.$last_name,
         timezone: data.$timezone,
         distinct_id: data.$distinct_id,
         email: data.$email,

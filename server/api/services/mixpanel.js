@@ -20,12 +20,15 @@ exports.getDataFromMixP = function(req, res) {
 //this function will be called when data from mix panel needed, called when asked for block status.
 exports.getDataFromMixPB = function(req, callback) {
     var udid = req;
-    console.log("udid:" + udid);
     engage.queryEngageApi({
         where: "properties[\"UDID\"] == \"" + udid + "\"" || ""
     }, function(queryDone) {
-        var jsondata = JSON.parse(queryDone);
-        if(jsondata)
+var jsondata;
+ try {
+       jsondata = JSON.parse(queryDone);
+  } catch (e) {
+    return console.error(e);
+  }
         callback(jsondata);
 
     });
